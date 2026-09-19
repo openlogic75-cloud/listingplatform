@@ -28,6 +28,13 @@ Never assume structure from memory — discover, then act. If the tracker is mis
 - Prefer additive change; deprecate before removing; keep public contracts stable unless the task says otherwise.
 - **Structure for locality.** Status transitions in one service, design tokens in one file, validation in one shared validator, permissions in one policy layer. The measure of good structure in this repo: *a change touched exactly the files its task listed — nothing else.*
 
+## 3a. Third-party assets stay out of the repo (standing rule)
+
+- **Never commit third-party art or reference material.** The `UX/`, `assets/` (icons, illustration art) and `ui deisgns/` folders are not our work. Keep them **on disk only, locally** — they are listed in `.gitignore` and must not be tracked, staged or pushed.
+- **Attribute, don't distribute.** When a task uses one of these files, record the owner, source link and licence in `ATTRIBUTION.md` — never copy the file into the repo to "include" it.
+- **Never `git add -f`** these paths, and do not remove their `.gitignore` entries. If a build needs one at runtime, keep a placeholder/README or fetch it from the source, not the file itself.
+- Applies to any new third-party asset too: source it, credit it in `ATTRIBUTION.md`, gitignore it.
+
 ## 4. Slice work vertically
 
 - Break features into **tracer-bullet slices** that cut through every layer (data → logic → interface → test) and are demoable on their own — not horizontal layer-by-layer chunks.

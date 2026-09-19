@@ -10,3 +10,19 @@ Thumbs.db
 # Environment files (any folder) - examples stay committed
 .env
 *.env.local
+
+# Third-party art and reference material (M31.1). Not our work and not
+# distributed in this repo - fetch from the sources listed in ATTRIBUTION.md.
+# Local copies stay on disk so development still runs; they simply are not
+# tracked. Do not re-add.
+assets/icons/
+assets/illustrations art/
+UX/
+ui deisgns/
+# mobile/assets/icons/ is declared in pubspec.yaml, so the folder must exist in
+# a clone; exclude its contents but keep the placeholder README.
+mobile/assets/icons/*
+!mobile/assets/icons/README.md
+backend/public/icons/
+backend/public/img/empty.svg
+backend/public/img/farm-girl.svg

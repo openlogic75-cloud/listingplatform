@@ -144,6 +144,7 @@ listingplatform/
 | M28 | Collectors & reseller farm produce (raised 2026-09-19) | ✅ | 5/5 — collector role + signing, reseller category/section, collection jobs, app collector screens, vendor request (web + app) |
 | M29 | Open-source distribution (raised 2026-09-19) | ✅ | 2/2 — MIT license + repo; About page source/contribution note and AI-built disclosure |
 | M30 | Media limits & optimisation (raised 2026-09-19) | ✅ | 1/1 — 2 MB upload cap, downscale to 1600 px + WebP, max 4 photos per listing |
+| M31 | Third-party asset hygiene (raised 2026-09-19) | ✅ | 1/1 — untracked third-party art/docs, credited owners + sources, gitignored |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -714,6 +715,16 @@ listingplatform/
 
 ---
 
+### M31 · Third-party asset hygiene — status: 🔄 (raised 2026-09-19, owner request)
+
+- [x] **M31.1 · Untrack third-party art/reference docs; credit owners + source links** — ✅
+  > **Files:** `.gitignore` · `ATTRIBUTION.md` 🆕 · `README.md` · `mobile/assets/icons/README.md` 🆕 · `plan.md`
+  > **Comment:** Owner: the icon, illustration, image and `UX/`/`ui deisgns/` files are not the owner's work (some downloaded, source forgotten). Do not distribute them in the repo: untrack and gitignore them (keep local copies so development still runs), add `ATTRIBUTION.md` crediting the original owners with source links, and note how to restore them. History purge (they remain in existing commits) is a separate decision.
+  > **Notes:** `— 2026-09-19: DELIVERED — untracked 7,675 files (Tabler icons, unDraw + Flowbite illustrations, 9 UX skills, 7 UI design docs, `backend/public/img/*.svg`); local copies kept. Sources traced: Tabler (MIT), unDraw, Flowbite, designmd.ai (Genesis/Verdana/WattVision, MIT), designmd.app (website templates, CC BY 4.0), jakubkrehel/skills, ehmo/platform-design-skills, sleekdotdesign/agent-skills, mattpocock/skills, Leonxlnx/taste-skill; brand-guidelines, ip-as-logo, mobile-android-design, minimalist-ui marked unconfirmed rather than guessed. `ATTRIBUTION.md` lists each with links; README updated; `mobile/assets/icons/README.md` placeholder kept so the pubspec asset path stays valid in a clone. Site still serves 200. **Not yet purged from git history — see open note.**`
+  > **Open:** the files remain in earlier commits and therefore in the pushed history. A history rewrite (`git filter-repo`) + force-push is needed to remove them; not done here because it rewrites shared history.
+
+---
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -746,6 +757,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M31.1 · Third-party asset hygiene | **Third-party art and reference docs removed from the repo and credited.** Untracked 7,675 files that are not our work — the Tabler icon sets, unDraw and Flowbite illustrations, `backend/public/img/*.svg`, the nine `UX/*_SKILL.md` and seven `ui deisgns/**` documents — and gitignored those paths; local copies stay on disk so development is unaffected. New `ATTRIBUTION.md` credits each owner with source links and a restore note: Tabler (MIT), unDraw, Flowbite, designmd.ai (Genesis/Verdana/WattVision, MIT), designmd.app (website templates, CC BY 4.0), jakubkrehel/skills, ehmo/platform-design-skills, sleekdotdesign/agent-skills, mattpocock/skills, Leonxlnx/taste-skill; four files marked source-unconfirmed rather than guessed. README updated; `mobile/assets/icons/README.md` placeholder keeps the pubspec asset path valid in a clone. Note: files still exist in earlier commits — a history rewrite is tracked as an open item. | `.gitignore` · `ATTRIBUTION.md` 🆕 · `README.md` · `mobile/assets/icons/README.md` 🆕 · `plan.md` |
 | 2026-09-19 | M30.1 · Media limits & optimisation | **2 MB cap, downscale + WebP, max 4 photos per listing.** Upload cap cut 5 MB → 2 MB in the shared validator, which now also **downscales the long side to 1600 px** (bicubic, alpha preserved) before the existing WebP q82 encode — so stored files are genuinely smaller, not just converted. Listings are capped at **4 photos** via one source of truth (`Product::MAX_IMAGES`) enforced in the API requests, the web form (including a total-on-edit guard) and the app picker; form copy/JS updated. Applies to all uploads (listing photos, UPI QR, verification evidence). 3 new tests; **backend 251 passed / 929 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/app/Support/UploadValidator.php` · `backend/app/Models/Product.php` · `backend/app/Http/Requests/{ListingRequest,UpdateListingRequest}.php` · `backend/app/Http/Controllers/Web/VendorListingController.php` · `backend/resources/views/dashboard/listing-form.blade.php` · `backend/public/js/listing-form.js` · `mobile/lib/features/vendor/listings/listing_edit_screen.dart` · `backend/tests/Feature/{MediaUploadTest,ListingsTest}.php` · `plan.md` |
 | 2026-09-19 | M29.2 · AI-built disclosure | **About page discloses that the project was built with AI.** New "Built with AI" section: built with the AI coding tool **opencode**, using the **GLM** and **DeepSeek** language models; states plainly that AI-assisted is not a claim of correctness — the same tests and review apply and mistakes are possible. Test asserts the disclosure renders. | `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md` |
 | 2026-09-19 | M29 · Open source | **Published to GitHub under MIT; About page invites use and contribution.** Added the MIT `LICENSE` and pushed the full history to `github.com/openlogic75-cloud/listingplatform` (public). About page gains an "Open source" section: the source is free to use, study and build on under MIT, and contributions/bug reports are welcome, with a link to the repository. Repo URL is env-driven (`SOURCE_REPO_URL` → `config('branding.repository_url')`), defaulting to the GitHub repo. | `LICENSE` 🆕 · `backend/config/branding.php` · `backend/.env.example` · `backend/resources/views/pages/about.blade.php` · `plan.md` |
