@@ -37,6 +37,8 @@
         photoCount.textContent = 'No photos selected yet';
       } else if (count === 1) {
         photoCount.textContent = '1 photo selected';
+      } else if (count > 4) {
+        photoCount.textContent = count + ' photos selected - only the first 4 are kept';
       } else {
         photoCount.textContent = count + ' photos selected';
       }

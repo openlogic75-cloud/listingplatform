@@ -35,6 +35,9 @@ class Product extends Model
     /** Farm produce listed in bulk for resellers (M28.2). */
     public const CATEGORY_FARM_RESELLER = 'farm_reseller';
 
+    /** Most photos one listing may carry (M30.1). Single source of truth. */
+    public const MAX_IMAGES = 4;
+
     public const CATEGORIES = [
         self::CATEGORY_TRADITIONAL,
         self::CATEGORY_AGRO,

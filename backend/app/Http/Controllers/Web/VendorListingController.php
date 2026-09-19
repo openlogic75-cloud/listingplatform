@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Support\UploadValidator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -86,7 +87,7 @@ class VendorListingController extends Controller
         $this->authorize('update', $product);
 
         $request->validate([
-            'remove_photos' => ['nullable', 'array', 'max:8'],
+            'remove_photos' => ['nullable', 'array', 'max:'.Product::MAX_IMAGES],
             'remove_photos.*' => ['string', 'max:255'],
         ]);
 
@@ -96,6 +97,12 @@ class VendorListingController extends Controller
             ->reject(fn (string $path) => in_array($path, $removed, true))
             ->values()
             ->all();
+
+        if (count($kept) + count($request->file('photos') ?? []) > Product::MAX_IMAGES) {
+            throw ValidationException::withMessages([
+                'photos' => ['A listing may have at most '.Product::MAX_IMAGES.' photos.'],
+            ]);
+        }
 
         $validated = $request->safe()->except(['images']);
         $validated['images'] = [...$kept, ...$this->storePhotos($request)];
@@ -116,13 +123,13 @@ class VendorListingController extends Controller
     private function storePhotos(Request $request): array
     {
         $request->validate([
-            'photos' => ['nullable', 'array', 'max:8'],
+            'photos' => ['nullable', 'array', 'max:'.Product::MAX_IMAGES],
             'photos.*' => ['file', 'max:'.UploadValidator::MAX_KILOBYTES],
         ]);
 
         $paths = [];
 
-        foreach (array_slice($request->file('photos') ?? [], 0, 8) as $file) {
+        foreach (array_slice($request->file('photos') ?? [], 0, Product::MAX_IMAGES) as $file) {
             $stored = UploadValidator::validateAndStore($file, 'products');
 
             Media::query()->create([

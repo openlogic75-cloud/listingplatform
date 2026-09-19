@@ -54,6 +54,22 @@ class ListingsTest extends TestCase
         $this->assertDatabaseHas('products', ['title' => 'Fresh tomatoes', 'status' => 'active']);
     }
 
+    public function test_a_listing_accepts_at_most_four_images(): void
+    {
+        ['token' => $token] = $this->registerVendor();
+
+        $images = array_map(
+            fn (int $number): string => "products/photo{$number}.webp",
+            range(1, Product::MAX_IMAGES + 1),
+        );
+
+        $this->withToken($token)->postJson('/api/v1/listings', [
+            'title' => 'Too many photos',
+            'category' => 'agro',
+            'images' => $images,
+        ])->assertUnprocessable()->assertJsonValidationErrors('images');
+    }
+
     public function test_a_rental_listing_requires_the_availability_window_and_forbids_moq(): void
     {
         ['token' => $token] = $this->registerVendor('rental_homestay', 'stay@example.test');

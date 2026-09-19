@@ -12,10 +12,11 @@ use Illuminate\Validation\ValidationException;
  * change it here only.
  *
  * Uploads are normalised to WebP by default (M11.1) at a fixed quality:
- * decoded with GD and re-encoded in one pass, which also strips any embedded
- * payloads. Transparent PNG/WebP sources keep their alpha channel, and the
- * original file is never stored. Callers whose image must stay lossless can
- * pass `$convertToWebp: false` (the UPI QR) — that path is re-encoded in its
+ * decoded with GD, **downscaled to a maximum long side (M30.1)** and
+ * re-encoded in one pass, which also strips any embedded payloads.
+ * Transparent PNG/WebP sources keep their alpha channel, and the original
+ * file is never stored. Callers whose image must stay lossless can pass
+ * `$convertToWebp: false` (the UPI QR) — that path is re-encoded in its
  * original format instead. If the host's GD cannot encode WebP the verified
  * original is moved, so uploads never fail over a conversion.
  */
@@ -28,9 +29,17 @@ final class UploadValidator
         'image/webp' => 'webp',
     ];
 
-    public const MAX_KILOBYTES = 5120; // 5 MB
+    public const MAX_KILOBYTES = 2048; // 2 MB
 
+    /** Reject absurd source dimensions before GD decodes them. */
     public const MAX_DIMENSION = 4096;
+
+    /**
+     * Stored images are downscaled so the long side is at most this many
+     * pixels. Photos come off phones at 3000–4000 px; 1600 px is ample for
+     * listing cards and detail views and roughly halves the encoded bytes.
+     */
+    public const MAX_OUTPUT_DIMENSION = 1600;
 
     /** WebP quality for re-encoding: visually lossless for listings. */
     public const WEBP_QUALITY = 82;
@@ -126,6 +135,8 @@ final class UploadValidator
             $image = $source !== false ? @imagecreatefromstring($source) : false;
 
             if ($image !== false) {
+                $image = self::downscale($image);
+
                 $stored = $convertToWebp && function_exists('imagewebp')
                     ? self::storeWebp($image, $directory)
                     : self::storeOriginalFormat($image, $directory, $mime);
@@ -195,6 +206,35 @@ final class UploadValidator
         }
 
         return ['path' => $relative, 'mime' => $mime];
+    }
+
+    /**
+     * Scale the image down so its long side is at most MAX_OUTPUT_DIMENSION,
+     * preserving aspect ratio. Smaller sources are returned untouched.
+     */
+    private static function downscale(\GdImage $image): \GdImage
+    {
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $longest = max($width, $height);
+
+        if ($longest <= self::MAX_OUTPUT_DIMENSION) {
+            return $image;
+        }
+
+        $scale = self::MAX_OUTPUT_DIMENSION / $longest;
+        $targetWidth = max(1, (int) round($width * $scale));
+        $targetHeight = max(1, (int) round($height * $scale));
+
+        $resized = @imagescale($image, $targetWidth, $targetHeight, IMG_BICUBIC);
+
+        if ($resized === false) {
+            return $image;
+        }
+
+        imagedestroy($image);
+
+        return $resized;
     }
 
     /**

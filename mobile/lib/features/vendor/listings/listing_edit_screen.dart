@@ -17,6 +17,8 @@ class ListingEditScreen extends ConsumerStatefulWidget {
 }
 
 class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
+  static const int _maxPhotos = 4;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _title = TextEditingController();
   final TextEditingController _description = TextEditingController();
@@ -311,7 +313,7 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
   }
 
   Future<void> _addPhotos() async {
-    final int remaining = 8 - _photos.length;
+    final int remaining = _maxPhotos - _photos.length;
     if (remaining <= 0) {
       return;
     }
@@ -324,7 +326,7 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
 
     setState(() {
       for (final XFile photo in picked) {
-        if (_photos.length >= 8) {
+        if (_photos.length >= _maxPhotos) {
           break;
         }
         _photos.add(photo);
@@ -381,7 +383,7 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
         ],
         const SizedBox(height: 8),
         Text(
-          'Up to 8 photos.',
+          'Up to $_maxPhotos photos.',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),

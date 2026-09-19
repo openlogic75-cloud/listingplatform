@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Support\UploadValidator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -147,6 +148,47 @@ class MediaUploadTest extends TestCase
         $this->withToken($token)->postJson('/api/v1/media', [
             'file' => UploadedFile::fake()->image('huge.jpg', 5000, 5000),
         ])->assertUnprocessable();
+    }
+
+    public function test_a_file_over_two_megabytes_is_rejected(): void
+    {
+        $token = $this->registerWorker();
+
+        $this->withToken($token)->postJson('/api/v1/media', [
+            'file' => UploadedFile::fake()->create('heavy.jpg', UploadValidator::MAX_KILOBYTES + 1, 'image/jpeg'),
+        ])->assertUnprocessable()->assertJsonValidationErrors('file');
+    }
+
+    /**
+     * Sources inside the dimension cap are still downscaled so the stored
+     * file is smaller, not merely re-encoded (M30.1).
+     */
+    public function test_a_large_photo_is_downscaled_to_the_output_cap(): void
+    {
+        $token = $this->registerWorker();
+        Storage::fake('public');
+
+        $image = imagecreatetruecolor(3000, 2000);
+        $source = tempnam(sys_get_temp_dir(), 'big').'.jpg';
+        imagejpeg($image, $source, 90);
+        imagedestroy($image);
+
+        $response = $this->withToken($token)->postJson('/api/v1/media', [
+            'file' => new UploadedFile($source, 'big.jpg', 'image/jpeg', null, true),
+            'directory' => 'products',
+        ]);
+
+        $response->assertCreated();
+        $this->assertStringEndsWith('.webp', (string) $response->json('path'));
+
+        $decoded = imagecreatefromstring(
+            (string) Storage::disk('public')->get((string) $response->json('path'))
+        );
+        $this->assertNotFalse($decoded);
+        $this->assertSame(UploadValidator::MAX_OUTPUT_DIMENSION, imagesx($decoded));
+        $this->assertSame(1067, imagesy($decoded)); // 2000 * 1600/3000, rounded
+        imagedestroy($decoded);
+        @unlink($source);
     }
 
     public function test_a_non_image_file_is_rejected(): void

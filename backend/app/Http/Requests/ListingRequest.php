@@ -64,7 +64,7 @@ abstract class ListingRequest extends FormRequest
                 'after_or_equal:available_from',
                 Rule::requiredIf($this->input('category') === Vendor::CATEGORY_RENTAL_HOMESTAY),
             ],
-            'images' => ['nullable', 'array', 'max:8'],
+            'images' => ['nullable', 'array', 'max:'.Product::MAX_IMAGES],
             'images.*' => ['string', 'max:255'],
             'district_id' => [
                 'nullable',

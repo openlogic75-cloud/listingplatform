@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use App\Models\Vendor;
 use Illuminate\Validation\Rule;
 
@@ -56,7 +57,7 @@ class UpdateListingRequest extends ListingRequest
                 'after_or_equal:available_from',
                 Rule::requiredIf($this->input('category') === Vendor::CATEGORY_RENTAL_HOMESTAY),
             ],
-            'images' => ['nullable', 'array', 'max:8'],
+            'images' => ['nullable', 'array', 'max:'.Product::MAX_IMAGES],
             'images.*' => ['string', 'max:255'],
             'district_id' => ['nullable', 'integer', 'exists:districts,id'],
             'locality_id' => ['nullable', 'integer', 'exists:localities,id'],

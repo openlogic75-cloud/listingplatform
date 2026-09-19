@@ -143,8 +143,8 @@
                                        accept="image/jpeg,image/png,image/webp" multiple>
                             </label>
                             <p class="muted small" style="margin: var(--space-1) 0 0;">
-                                JPEG, PNG or WebP, up to 5 MB each, 8 in total. The
-                                server converts them to WebP before publishing.
+                                JPEG, PNG or WebP, up to 2 MB each, 4 in total. The
+                                server resizes them and converts them to WebP before publishing.
                             </p>
                             @error('photos')<p class="field-error" role="alert">{{ $message }}</p>@enderror
                             @error('photos.*')<p class="field-error" role="alert">{{ $message }}</p>@enderror
