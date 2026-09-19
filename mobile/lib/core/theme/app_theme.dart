@@ -32,7 +32,7 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor:
           brightness == Brightness.light ? const Color(0xFFFAFAFA) : null,
-      textTheme: GoogleFonts.interTextTheme(
+      textTheme: GoogleFonts.interTightTextTheme(
         brightness == Brightness.light
             ? ThemeData(brightness: Brightness.light).textTheme
             : ThemeData(brightness: Brightness.dark).textTheme,
@@ -47,9 +47,9 @@ abstract final class AppTheme {
         scrolledUnderElevation: 1,
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.interTight(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           letterSpacing: -0.01,
           color: scheme.onSurface,
         ),
@@ -67,9 +67,9 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           minimumSize: const Size(0, TouchTarget.min),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.controlRadius),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.interTight(
             fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -77,9 +77,9 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(0, TouchTarget.min),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.controlRadius),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.interTight(
             fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

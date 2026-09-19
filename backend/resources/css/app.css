@@ -4,7 +4,7 @@
  * overflow. Icons are inline SVG or /icons/*.svg - never emoji characters.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap');
 
 *,
 *::before,
@@ -74,7 +74,7 @@ a:hover {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
     font-size: 1.05rem;
     letter-spacing: -0.01em;
     color: var(--color-ink);
@@ -91,7 +91,7 @@ a:hover {
 
 .brand-wordmark {
     display: inline-block;
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
     font-size: 1.05rem;
     letter-spacing: -0.01em;
 }
@@ -110,7 +110,7 @@ a:hover {
 }
 
 .site-nav a {
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     font-size: 0.95rem;
     color: var(--color-ink);
 }
@@ -125,7 +125,7 @@ a:hover {
 
 .hero h1 {
     font-size: clamp(2.1rem, 5vw, 3.4rem);
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
     letter-spacing: -0.02em;
     line-height: 1.15;
     margin: 0 0 var(--space-3);
@@ -160,7 +160,7 @@ a:hover {
 
 .section h2 {
     font-size: clamp(1.4rem, 3vw, 1.9rem);
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
     letter-spacing: -0.01em;
     margin: 0 0 var(--space-3);
 }
@@ -177,7 +177,7 @@ a:hover {
     border-radius: var(--radius-sm);
     border: 1px solid transparent;
     font: inherit;
-    font-weight: 600;
+    font-weight: var(--font-weight-medium);
     font-size: 0.95rem;
     cursor: pointer;
     transition: transform var(--dur-fast) var(--ease-out),
@@ -370,7 +370,7 @@ a:hover {
 .catalog-filter-field label {
     color: var(--color-muted);
     font-size: 0.78rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
     letter-spacing: 0.02em;
 }
 

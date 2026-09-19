@@ -18,10 +18,10 @@ abstract final class Spacing {
   static const double xxxl = 48;
 }
 
-/// Corner radii: controls 8, cards 12, chips pill.
+/// Corner radii: crisp controls 6, cards 8, chips pill.
 abstract final class AppRadius {
-  static const double control = 8;
-  static const double card = 12;
+  static const double control = 6;
+  static const double card = 8;
   static const double pill = 999;
 
   static final BorderRadius controlRadius = BorderRadius.circular(control);

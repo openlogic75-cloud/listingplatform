@@ -4,6 +4,8 @@
  * Source design system: ui deisgns/dashboard ui/genesis-DESIGN.md
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap');
+
 *,
 *::before,
 *::after {
@@ -30,21 +32,19 @@ h3 {
     font-family: var(--adm-font-display);
     letter-spacing: -0.02em;
     margin: 0;
+    font-weight: 500;
 }
 
 h1 {
     font-size: 1.5rem;
-    font-weight: 600;
 }
 
 h2 {
     font-size: 1.15rem;
-    font-weight: 600;
 }
 
 h3 {
     font-size: 1rem;
-    font-weight: 600;
 }
 
 .shell {
@@ -78,7 +78,7 @@ h3 {
     gap: var(--adm-space-2);
     color: var(--adm-ink);
     font-family: var(--adm-font-display);
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
 }
 

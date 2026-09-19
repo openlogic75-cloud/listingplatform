@@ -149,6 +149,7 @@ listingplatform/
 | M33 | Contact, grievance and peer-to-peer responsibility copy (raised 2026-09-19) | ✅ | 2/2 — contact/grievance details and rate-compliance disclaimer |
 | M34 | Responsive UI fluidity audit (raised 2026-09-19) | ✅ | 1/1 — website navigation fixed for narrow screens; Flutter static audit complete |
 | M35 | Modern responsive public search/filter UI (raised 2026-09-19) | ✅ | 1/1 — PG/stays, catalog and farm-produce filters use responsive labeled cards |
+| M36 | Clean sharp typography and UI pass (raised 2026-09-19) | ✅ | 1/1 — lighter Inter Tight typography, sharper radii and crisp surfaces |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -769,6 +770,15 @@ listingplatform/
   > **Comment:** Owner: the PG/rentals/homestays search must be fluid, and the same modern treatment should apply to the catalog and farm-produce filters. Use visible labels, full-width controls, responsive grid collapse, clear action grouping and no narrow-screen overflow.
   > **Notes:** `— 2026-09-19: DELIVERED — public filter forms now use labeled controls, a surface/border/shadow filter card, responsive grid columns, full-width inputs/selects, grouped actions and 2-column/1-column phone collapse. Applied to `/stays`, `/catalog` and `/reseller-produce`; CSS published. 12 focused assertions and full backend 253 tests passed; Flutter analyze clean, 19/19 tests.`
 
+---
+
+### M36 · Clean sharp typography and UI pass — status: ✅ (raised 2026-09-19, owner request)
+
+- [x] **M36.1 · Apply lighter typography, sharper radii and crisp surfaces across web/app** — ✅
+  > **Files:** `backend/resources/css/{tokens,app,admin-tokens,admin}.css` · `backend/public/css/` · `mobile/lib/core/theme/{tokens,app_theme}.dart` · `plan.md`
+  > **Comment:** Owner: use a clean, sharp visual language with thinner fonts and slimmer controls while preserving contrast, focus states and 48px touch targets. Publish website CSS and keep web/app tokens aligned.
+  > **Notes:** `— 2026-09-19: DELIVERED — website/admin now use Inter Tight with lighter emphasis, sharper 2/6/8px public radii, 4/8px admin radii, flatter shadows and crisp borders; Flutter uses Inter Tight, lighter app-bar/button weights and 6/8px control/card radii. CSS published. Backend 253 tests, Pint clean; Flutter analyze clean, 19/19 tests.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -802,6 +812,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M36.1 · Clean sharp typography and UI pass | **Applied a cleaner, sharper visual language.** Website and admin surfaces now use Inter Tight, lighter heading/control weights, sharper radii, flatter shadows and crisp borders; Flutter uses Inter Tight with lighter app-bar/button weights and smaller control/card radii. Served CSS published. **253 backend tests / 942 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/resources/css/{tokens,app,admin-tokens,admin}.css` · `backend/public/css/` · `mobile/lib/core/theme/{tokens,app_theme}.dart` · `plan.md` |
 | 2026-09-19 | M35.1 · Modern responsive public search/filter UI | **Reworked public filter forms for fluid layouts.** `/stays` (PG/rentals/homestays), `/catalog` and `/reseller-produce` now use visible labels, responsive filter cards, full-width controls, grouped Search/Clear actions and mobile 2-column/1-column collapse. Served CSS republished. **253 backend tests / 942 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/resources/css/app.css` · `backend/public/css/app.css` · `backend/resources/views/pages/{catalog,stays,reseller-produce}.blade.php` · `plan.md` |
 | 2026-09-19 | M34.1 · Responsive UI fluidity audit | **Responsive audit completed.** The website navigation now wraps and stacks below 768px instead of overflowing narrow screens; served CSS was republished. Flutter layouts were statically checked for scrollable parents, `Expanded`/`Flexible`/`Wrap` usage and fixed-width overflow. No additional mobile overflow was found. Residual risk: final browser-width and physical-device/keyboard walkthrough still required. | `backend/resources/css/app.css` · `backend/public/css/app.css` · `mobile/lib/` · `plan.md` |
 | 2026-09-19 | M33 · Contact, grievance and peer-to-peer responsibility copy | **Added Shekuthi contact and grievance details.** `contact@shekuthi.in` and grievance officer `K Hika Zhimomi` are now defaults in legal config/env examples and appear on `/contact`, About, Privacy, Terms and Disclaimer surfaces. Disclaimer now states that applicable district/state/local/municipal rate rules remain the users' responsibility and Shekuthi is only a peer-to-peer connector; no rates or money are set/held by the platform. 2 tests / 22 assertions. | `backend/config/legal.php` · `backend/.env.example` · `backend/.env.production.example` · `backend/app/Http/Controllers/Web/PageController.php` · `backend/resources/views/{layouts/app,pages/about,pages/contact,pages/disclaimer}.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/ContactAndLegalTest.php` 🆕 · `docs/launch/compliance.md` · `plan.md` |

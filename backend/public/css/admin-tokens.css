@@ -21,12 +21,12 @@
     --adm-danger: #EF4444;
 
     /* Typography */
-    --adm-font-display: 'General Sans', 'DM Sans', -apple-system, sans-serif;
-    --adm-font-body: 'DM Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --adm-font-display: 'Inter Tight', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --adm-font-body: 'Inter Tight', -apple-system, 'Segoe UI', Roboto, sans-serif;
 
     /* Shape - buttons/inputs 6px, cards 12px (do not mix) */
-    --adm-radius-control: 6px;
-    --adm-radius-card: 12px;
+    --adm-radius-control: 4px;
+    --adm-radius-card: 8px;
 
     /* Spacing - 4px base grid */
     --adm-space-1: 4px;
