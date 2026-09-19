@@ -19,11 +19,14 @@ return [
 
     'address' => env('LEGAL_ADDRESS'),
 
-    'contact_email' => env('LEGAL_CONTACT_EMAIL'),
+    'contact_email' => env('LEGAL_CONTACT_EMAIL', 'contact@shekuthi.in'),
 
     // DPDP requires a grievance channel; defaults to the contact email.
-    'grievance_officer_name' => env('GRIEVANCE_OFFICER_NAME'),
-    'grievance_officer_email' => env('GRIEVANCE_OFFICER_EMAIL', env('LEGAL_CONTACT_EMAIL')),
+    'grievance_officer_name' => env('GRIEVANCE_OFFICER_NAME', 'K Hika Zhimomi'),
+    'grievance_officer_email' => env(
+        'GRIEVANCE_OFFICER_EMAIL',
+        env('LEGAL_CONTACT_EMAIL', 'contact@shekuthi.in'),
+    ),
 
     // Exclusive jurisdiction for disputes (Q10 region: Nagaland, India).
     'jurisdiction' => env('LEGAL_JURISDICTION', 'Nagaland, India'),

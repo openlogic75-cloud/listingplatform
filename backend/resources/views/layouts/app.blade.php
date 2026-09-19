@@ -23,6 +23,7 @@
                 <li><a href="{{ route('transport') }}">Transport &amp; errands</a></li>
                 <li><a href="{{ route('blog') }}">Blog</a></li>
                 <li><a href="{{ route('about') }}">About</a></li>
+                <li><a href="{{ route('contact') }}">Contact</a></li>
                 <li><a href="{{ route('donation') }}">Donate</a></li>
                 @auth
                     @if (auth()->user()->role === 'admin')
@@ -61,6 +62,8 @@
                 <a href="{{ route('donation') }}">Support the platform</a>
                 &middot;
                 <a href="{{ route('about') }}">Mission</a>
+                &middot;
+                <a href="{{ route('contact') }}">Contact</a>
             </span>
             <span>
                 <a href="{{ route('terms') }}">Terms</a>

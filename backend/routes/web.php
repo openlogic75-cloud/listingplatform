@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 // Guest booking from the website is the M3.1 tracer bullet.
 Route::get('/', HomeController::class)->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/disclaimer', [PageController::class, 'disclaimer'])->name('disclaimer');

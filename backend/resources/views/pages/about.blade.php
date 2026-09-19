@@ -4,6 +4,12 @@
 
 @section('metaDescription', 'A connector, not a gatekeeper: it helps farmers, sellers, logistics, resellers and skilled workers reach each other and end customers. No commission, no payments, no vouching.')
 
+@php
+    $contactEmail = config('legal.contact_email');
+    $grievanceOfficer = config('legal.grievance_officer_name');
+    $grievanceEmail = config('legal.grievance_officer_email');
+@endphp
+
 @section('content')
     <section class="container hero">
         <div>
@@ -131,6 +137,19 @@
     </section>
 
     <section class="section">
+        <div class="container">
+            <h2>Contact and grievance redressal</h2>
+            <p>
+                For questions about Shekuthi, contact
+                <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>.
+                Grievances can be addressed to {{ $grievanceOfficer }} at
+                <a href="mailto:{{ $grievanceEmail }}">{{ $grievanceEmail }}</a>.
+            </p>
+            <a class="btn btn-secondary" href="{{ route('contact') }}">Contact Shekuthi</a>
+        </div>
+    </section>
+
+    <section class="section section-alt">
         <div class="container">
             <h2>Open source</h2>
             <p>

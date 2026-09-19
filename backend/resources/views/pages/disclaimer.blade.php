@@ -7,6 +7,8 @@
     $entity = config('legal.entity_name');
     $effective = config('legal.effective_date');
     $contact = config('legal.contact_email');
+    $grievanceOfficer = config('legal.grievance_officer_name');
+    $grievanceEmail = config('legal.grievance_officer_email');
     $ph = fn (?string $v, string $label): string => $v !== null && $v !== '' ? $v : '['.$label.' not yet configured]';
 @endphp
 
@@ -22,6 +24,23 @@
             buyer, a broker, an employer or a payment processor, and it is not a
             party to any agreement made between users. Every deal, delivery and
             payment happens directly between the people involved.
+        </p>
+
+        <h2>Peer-to-peer rates and compliance</h2>
+        <p>
+            Shekuthi is only a peer-to-peer connector where users find each
+            other and grow through direct arrangements. Users set or agree
+            prices, service fees, delivery fees and collection fees directly.
+            Where a district, state, local-jurisdiction or municipal authority
+            prescribes rates, caps, taxes, permits or other requirements, users
+            are responsible for checking and following them.
+        </p>
+        <p>
+            Shekuthi does not set, approve, verify or enforce user rates and is
+            not responsible for a user's non-compliance, rate dispute,
+            overcharge, undercharge, permit, tax or agreement, to the maximum
+            extent permitted by law. The platform does not hold or process the
+            money involved.
         </p>
 
         <h2>No vouching</h2>
@@ -74,7 +93,10 @@
 
         <h2>Contact</h2>
         <p>
-            Questions about this disclaimer: {{ $ph($contact, 'contact email') }}.
+            Questions about this disclaimer:
+            <a href="mailto:{{ $ph($contact, 'contact email') }}">{{ $ph($contact, 'contact email') }}</a>.
+            Grievances may be addressed to {{ $ph($grievanceOfficer, 'grievance officer name') }} at
+            <a href="mailto:{{ $ph($grievanceEmail, 'grievance officer email') }}">{{ $ph($grievanceEmail, 'grievance officer email') }}</a>.
         </p>
     </section>
 @endsection

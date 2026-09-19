@@ -15,7 +15,7 @@
 | Right to correction | Profile edit in app + web. |
 | Right to erasure | Self-serve account deletion (`/deletion`, `DataDeletionService`) with end-to-end anonymisation; integrity snapshots keep no contact data. |
 | Right to nominate | Handled through the grievance officer (record a nominee on request). |
-| Grievance redressal | Grievance officer named in `config/legal.php`, shown on the Privacy and Terms pages. |
+| Grievance redressal | Grievance officer **K Hika Zhimomi** at **contact@shekuthi.in**, configured in `config/legal.php` and shown on the Contact, Privacy, Terms and Disclaimer pages. |
 | Children's data | 18+ statement in Terms/Privacy; no knowing collection. |
 | Data minimisation | Buyers never register; guest bookings keep name + phone only. |
 | Security safeguards | Encrypted PII at rest, keyed blind indexes for lookups, hashed passwords, HTTPS/HSTS, strict CSP, rate limits, role-scoped access. |
@@ -27,15 +27,15 @@
 
 - `APP_DEBUG=false`, database session/cache/queue drivers, security headers, token CORS (`backend/.env.production.example`).
 - Stylesheets published with `php artisan assets:publish`; asset URLs versioned so browsers never serve a stale file.
-- 240 backend tests green; Flutter `analyze` clean, tests green.
+- 253 backend tests green (942 assertions); Flutter `analyze` clean, 19 tests green.
 - Deploy runbook, security checklist and launch checklist in `docs/`.
 
 ## Still required from the owner (blockers)
 
-1. **Legal identity** — set `LEGAL_ENTITY_NAME`, `LEGAL_ADDRESS`,
-   `LEGAL_CONTACT_EMAIL`, `GRIEVANCE_OFFICER_NAME`,
-   `GRIEVANCE_OFFICER_EMAIL`, `LEGAL_JURISDICTION` in the production `.env`.
-   Until set, the pages show a clearly-marked `[...not yet configured]` token.
+1. **Legal identity** — set `LEGAL_ENTITY_NAME`, `LEGAL_ADDRESS` and
+   `LEGAL_JURISDICTION` in the production `.env`. Public contact and grievance
+   details are set to `contact@shekuthi.in` and `K Hika Zhimomi`; confirm them
+   before launch.
 2. **Q7 — Hostinger confirmation**: PHP version pin and the single cron entry
    (`* * * * * php artisan schedule:run`) so retention sweeps run automatically.
 3. **Q13 — Brand**: name/logo/palette, needed for the favicon, social image and
@@ -51,3 +51,6 @@
 - Verification is an on-site visit record by an independent volunteer, not a
   platform guarantee (stated on the listing page, About and Disclaimer).
 - The platform is not a party to any deal and never moves money.
+- Users must comply with applicable district, state, local-jurisdiction and
+  municipal rate rules, permits and taxes. Shekuthi is only a peer-to-peer
+  connector and does not set, verify or guarantee user rates or agreements.
