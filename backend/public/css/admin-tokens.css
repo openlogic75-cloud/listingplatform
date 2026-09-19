@@ -1,0 +1,47 @@
+/*
+ * Dashboard design tokens (admin + role dashboards).
+ * Source: ui deisgns/dashboard ui/genesis-DESIGN.md
+ * Reference: docs/design/tokens.md
+ * Rule: --adm-interactive is reserved for interactive elements only - never
+ * decoration or static text.
+ */
+
+:root {
+    /* Color */
+    --adm-bg: #FAFAFA;
+    --adm-surface: #FFFFFF;
+    --adm-interactive: #6366F1;
+    --adm-interactive-hover: #4F46E5;
+    --adm-ink: #0A0A0A;
+    --adm-ink-secondary: #6B6B6B;
+    --adm-muted: #9C9C9C;
+    --adm-border: #E8E8EC;
+    --adm-success: #10B981;
+    --adm-warning: #F59E0B;
+    --adm-danger: #EF4444;
+
+    /* Typography */
+    --adm-font-display: 'General Sans', 'DM Sans', -apple-system, sans-serif;
+    --adm-font-body: 'DM Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    /* Shape - buttons/inputs 6px, cards 12px (do not mix) */
+    --adm-radius-control: 6px;
+    --adm-radius-card: 12px;
+
+    /* Spacing - 4px base grid */
+    --adm-space-1: 4px;
+    --adm-space-2: 8px;
+    --adm-space-3: 12px;
+    --adm-space-4: 16px;
+    --adm-space-5: 24px;
+    --adm-space-6: 32px;
+    --adm-space-7: 48px;
+
+    /* Elevation - hover and focus only, never on static elements */
+    --adm-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --adm-ring-focus: 0 0 0 3px rgba(99, 102, 241, 0.12);
+
+    /* Motion */
+    --adm-dur: 200ms;
+    --adm-ease: ease-out;
+}

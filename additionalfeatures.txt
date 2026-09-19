@@ -1,0 +1,14 @@
+please add these functions
+
+- delivery and errands by selecting location by the riders they can select location as base of operation by selecting district and 5 base of operation as max nearest locality like center east west north south. the names of locality can be added by admin in dashboard 
+- the platform will be free and no comission. the platform will function on donation. the donation page will have upi id and upi image where admin can upload image and ui id 
+- vendors for traditional products and agro products can be listed 
+- listing of rental, homestays etc can be listed.
+- users do not need to register only vendors driver and skilled worker needs to register.
+- drivers can set offline and online toggle mode for availability. 
+- vendors can have referal and affiliate links that they can share to their marketing team to let others earn through referal or affiliate 
+- make it dpdp compliant 
+- use proper security features 
+- use proper guidelines where the user can delete their data as per dpdp 
+- use encryption for registered users
+

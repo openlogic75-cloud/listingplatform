@@ -1,0 +1,520 @@
+/*
+ * Dashboard components (admin screens).
+ * Tokens come from admin-tokens.css - no literal values here.
+ * Source design system: ui deisgns/dashboard ui/genesis-DESIGN.md
+ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--adm-bg);
+    color: var(--adm-ink);
+    font-family: var(--adm-font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--adm-interactive);
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--adm-font-display);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Vertical rhythm for stacked cards. Used by every dashboard screen. */
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--adm-space-4);
+}
+
+/* Sidebar -------------------------------------------------------------- */
+
+.sidebar {
+    width: 248px;
+    flex: 0 0 248px;
+    background: var(--adm-surface);
+    border-right: 1px solid var(--adm-border);
+    padding: var(--adm-space-5) var(--adm-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--adm-space-5);
+}
+
+.sidebar .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--adm-space-2);
+    color: var(--adm-ink);
+    font-family: var(--adm-font-display);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.sidebar .brand-mark {
+    height: 26px;
+    width: auto;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--adm-space-1);
+}
+
+.sidebar nav a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--adm-space-3);
+    border-radius: var(--adm-radius-control);
+    color: var(--adm-ink-secondary);
+    text-decoration: none;
+    transition: background var(--adm-dur) var(--adm-ease),
+        color var(--adm-dur) var(--adm-ease);
+}
+
+.sidebar nav a:hover {
+    background: var(--adm-bg);
+    color: var(--adm-ink);
+}
+
+.sidebar nav a[aria-current="page"] {
+    background: var(--adm-bg);
+    color: var(--adm-ink);
+    font-weight: 600;
+}
+
+.sidebar .session {
+    margin-top: auto;
+    border-top: 1px solid var(--adm-border);
+    padding-top: var(--adm-space-4);
+    font-size: 0.85rem;
+    color: var(--adm-ink-secondary);
+}
+
+/* Main ----------------------------------------------------------------- */
+
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: var(--adm-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--adm-space-5);
+}
+
+.page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--adm-space-3);
+}
+
+.page-head p {
+    margin: 0;
+    color: var(--adm-ink-secondary);
+    max-width: 62ch;
+}
+
+/* Cards ---------------------------------------------------------------- */
+
+.card {
+    background: var(--adm-surface);
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius-card);
+    padding: var(--adm-space-5);
+}
+
+.card > header {
+    margin-bottom: var(--adm-space-4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--adm-space-2);
+}
+
+.card > header p {
+    margin: var(--adm-space-1) 0 0;
+    color: var(--adm-ink-secondary);
+    font-size: 0.9rem;
+}
+
+.grid {
+    display: grid;
+    gap: var(--adm-space-5);
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+/* Forms ---------------------------------------------------------------- */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--adm-space-2);
+    margin-bottom: var(--adm-space-4);
+}
+
+.field label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.field .hint {
+    font-size: 0.82rem;
+    color: var(--adm-muted);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--adm-space-2) var(--adm-space-3);
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius-control);
+    background: var(--adm-surface);
+    color: var(--adm-ink);
+    font: inherit;
+    transition: border-color var(--adm-dur) var(--adm-ease),
+        box-shadow var(--adm-dur) var(--adm-ease);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+    border-color: var(--adm-interactive);
+    box-shadow: var(--adm-ring-focus);
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--adm-space-2);
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--adm-interactive);
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--adm-space-2);
+    min-height: 44px;
+    padding: 0 var(--adm-space-4);
+    border: 1px solid transparent;
+    border-radius: var(--adm-radius-control);
+    background: var(--adm-interactive);
+    color: #FFFFFF;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--adm-dur) var(--adm-ease),
+        box-shadow var(--adm-dur) var(--adm-ease);
+}
+
+.button:hover {
+    background: var(--adm-interactive-hover);
+    box-shadow: var(--adm-shadow-hover);
+}
+
+.button:focus-visible {
+    outline: none;
+    box-shadow: var(--adm-ring-focus);
+}
+
+.button.secondary {
+    background: transparent;
+    color: var(--adm-ink);
+    border-color: var(--adm-border);
+}
+
+.button.secondary:hover {
+    background: var(--adm-bg);
+}
+
+.button.danger {
+    background: var(--adm-danger);
+}
+
+.button.danger:hover {
+    background: #DC2626;
+}
+
+.button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Table ---------------------------------------------------------------- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+th,
+td {
+    text-align: left;
+    padding: var(--adm-space-3);
+    border-bottom: 1px solid var(--adm-border);
+    vertical-align: top;
+}
+
+th {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--adm-muted);
+    font-weight: 600;
+}
+
+tbody tr:hover {
+    background: var(--adm-bg);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status --------------------------------------------------------------- */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--adm-space-1);
+    padding: 2px var(--adm-space-2);
+    border-radius: var(--adm-radius-control);
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid var(--adm-border);
+    color: var(--adm-ink-secondary);
+}
+
+.status.ok {
+    color: var(--adm-success);
+    border-color: var(--adm-success);
+}
+
+.status.warn {
+    color: var(--adm-warning);
+    border-color: var(--adm-warning);
+}
+
+.status.bad {
+    color: var(--adm-danger);
+    border-color: var(--adm-danger);
+}
+
+.alert {
+    border: 1px solid var(--adm-border);
+    border-left: 3px solid var(--adm-success);
+    border-radius: var(--adm-radius-control);
+    background: var(--adm-surface);
+    padding: var(--adm-space-3) var(--adm-space-4);
+}
+
+.alert.error {
+    border-left-color: var(--adm-danger);
+    color: var(--adm-danger);
+}
+
+.muted {
+    color: var(--adm-ink-secondary);
+}
+
+.small {
+    font-size: 0.85rem;
+}
+
+.inline-form {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--adm-space-2);
+}
+
+.pagination {
+    margin-top: var(--adm-space-4);
+}
+
+.pagination nav {
+    display: flex;
+    gap: var(--adm-space-2);
+}
+
+.thumb {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius-control);
+    background: var(--adm-surface);
+}
+
+/* Login ---------------------------------------------------------------- */
+
+.login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--adm-space-5);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--adm-surface);
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius-card);
+    padding: var(--adm-space-6);
+}
+
+.login-card h1 {
+    margin-bottom: var(--adm-space-1);
+}
+
+/* Member auth pages (M8.12) reuse this shell. The register form needs more
+   room for its role list and fields. */
+.login-card.wide {
+    max-width: 520px;
+}
+
+/* Wordmark fallback for when no logo file is present (shared with the
+   admin sign-in, which renders the same brand component). */
+.brand-wordmark {
+    font-family: var(--adm-font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--adm-ink);
+}
+
+/* Per-field validation messages (member auth forms; the admin sign-in shows
+   only the first error in the alert above the form). */
+.field-error {
+    margin: 0;
+    color: var(--adm-danger);
+    font-size: 0.82rem;
+}
+
+/* Group heading inside a longer form (register). Matches the dashboard's
+   uppercase table-header treatment. */
+.form-section {
+    margin: var(--adm-space-5) 0 var(--adm-space-3);
+    padding-top: var(--adm-space-3);
+    border-top: 1px solid var(--adm-border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--adm-muted);
+}
+
+/* Role picker (register). Plain radios in the dashboard's field language;
+   the vendor shop fields below reveal without JavaScript via :has. */
+.role-radios {
+    display: flex;
+    flex-direction: column;
+    gap: var(--adm-space-1);
+    margin: 0 0 var(--adm-space-4);
+    padding: 0;
+    border: 0;
+}
+
+.role-radios legend {
+    padding: 0;
+    margin-bottom: var(--adm-space-2);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.role-radios .radio {
+    display: flex;
+    align-items: center;
+    gap: var(--adm-space-2);
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.role-radios input {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    accent-color: var(--adm-interactive);
+}
+
+.vendor-fields {
+    display: none;
+}
+
+.role-radios:has(input[value="vendor"]:checked) + .vendor-fields {
+    display: block;
+}
+
+@media (max-width: 800px) {
+    .shell {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex: 0 0 auto;
+        border-right: none;
+        border-bottom: 1px solid var(--adm-border);
+    }
+
+    .sidebar .session {
+        margin-top: var(--adm-space-4);
+    }
+
+    .main {
+        padding: var(--adm-space-4);
+    }
+}
