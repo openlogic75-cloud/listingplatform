@@ -42,7 +42,34 @@
                     <li><a href="{{ route('register') }}">Register</a></li>
                 @endauth
             </ul>
+            <div class="mobile-nav-action">
+                @auth
+                    @if (auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.donation.edit') }}">Admin</a>
+                    @else
+                        <a href="{{ route('dashboard') }}">Account</a>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}">Sign in</a>
+                @endauth
+            </div>
         </div>
+    </nav>
+
+    <nav class="mobile-tab-bar" aria-label="Mobile primary navigation">
+        <a href="{{ route('home') }}" @if (request()->routeIs('home')) aria-current="page" @endif>Home</a>
+        <a href="{{ route('catalog') }}" @if (request()->routeIs('catalog*')) aria-current="page" @endif>Browse</a>
+        <a href="{{ route('stays') }}" @if (request()->routeIs('stays')) aria-current="page" @endif>Stays</a>
+        <a href="{{ route('reseller.produce') }}" @if (request()->routeIs('reseller.produce')) aria-current="page" @endif>Farm</a>
+        @auth
+            @if (auth()->user()->role === 'admin')
+                <a href="{{ route('admin.donation.edit') }}">Account</a>
+            @else
+                <a href="{{ route('dashboard') }}">Account</a>
+            @endif
+        @else
+            <a href="{{ route('login') }}">Account</a>
+        @endauth
     </nav>
 
     <main>

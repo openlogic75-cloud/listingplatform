@@ -115,6 +115,11 @@ a:hover {
     color: var(--color-ink);
 }
 
+.mobile-nav-action,
+.mobile-tab-bar {
+    display: none;
+}
+
 .hero {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
@@ -772,14 +777,73 @@ a:hover {
 
 @media (max-width: 768px) {
     .site-nav .container {
-        align-items: stretch;
-        flex-direction: column;
+        align-items: center;
+        flex-direction: row;
         padding-block: var(--space-2);
     }
 
     .site-nav ul {
-        width: 100%;
-        gap: var(--space-1) var(--space-2);
+        display: none;
+    }
+
+    .mobile-nav-action {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        margin-left: auto;
+        padding-inline: var(--space-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface-alt);
+    }
+
+    .mobile-nav-action a {
+        color: var(--color-ink);
+        font-size: 0.85rem;
+        font-weight: var(--font-weight-medium);
+    }
+
+    .mobile-tab-bar {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: var(--z-nav);
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        min-height: 64px;
+        padding: var(--space-1) var(--space-1) env(safe-area-inset-bottom);
+        border-top: 1px solid var(--color-border);
+        background: color-mix(in srgb, var(--color-surface) 96%, transparent);
+        box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(12px);
+    }
+
+    .mobile-tab-bar a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding-inline: 2px;
+        border-radius: var(--radius-md);
+        color: var(--color-muted);
+        font-size: 0.72rem;
+        font-weight: var(--font-weight-medium);
+        text-align: center;
+    }
+
+    .mobile-tab-bar a[aria-current="page"] {
+        background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+        color: var(--color-accent);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    main {
+        padding-bottom: calc(72px + env(safe-area-inset-bottom));
+    }
+
+    .site-footer {
+        padding-bottom: calc(var(--space-4) + 72px + env(safe-area-inset-bottom));
     }
 
     .hero {

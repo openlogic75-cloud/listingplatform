@@ -150,6 +150,7 @@ listingplatform/
 | M34 | Responsive UI fluidity audit (raised 2026-09-19) | ✅ | 1/1 — website navigation fixed for narrow screens; Flutter static audit complete |
 | M35 | Modern responsive public search/filter UI (raised 2026-09-19) | ✅ | 1/1 — PG/stays, catalog and farm-produce filters use responsive labeled cards |
 | M36 | Clean sharp typography and UI pass (raised 2026-09-19) | ✅ | 1/1 — lighter Inter Tight typography, sharper radii and crisp surfaces |
+| M37 | Mobile website app-like shell (raised 2026-09-19) | ✅ | 1/1 — mobile compact header and fixed bottom navigation |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -779,6 +780,15 @@ listingplatform/
   > **Comment:** Owner: use a clean, sharp visual language with thinner fonts and slimmer controls while preserving contrast, focus states and 48px touch targets. Publish website CSS and keep web/app tokens aligned.
   > **Notes:** `— 2026-09-19: DELIVERED — website/admin now use Inter Tight with lighter emphasis, sharper 2/6/8px public radii, 4/8px admin radii, flatter shadows and crisp borders; Flutter uses Inter Tight, lighter app-bar/button weights and 6/8px control/card radii. CSS published. Backend 253 tests, Pint clean; Flutter analyze clean, 19/19 tests.`
 
+---
+
+### M37 · Mobile website app-like shell — status: ✅ (raised 2026-09-19, owner request)
+
+- [x] **M37.1 · Add compact mobile header and bottom navigation** — ✅
+  > **Files:** `backend/resources/views/layouts/app.blade.php` · `backend/resources/css/app.css` · `backend/public/css/app.css` · `plan.md`
+  > **Comment:** Owner: when viewed at phone widths, the website should feel like a native mobile app rather than only a squeezed desktop page. Keep desktop navigation intact; mobile gets a compact top bar, account action, fixed bottom tabs and safe-area/content spacing.
+  > **Notes:** `— 2026-09-19: DELIVERED — mobile widths now use a compact Shekuthi header, account action and fixed Home/Browse/Stays/Farm/Account tabs with safe-area padding; desktop navigation remains unchanged. Contact/form/filter pages retain content clearance above the tab bar. Routes and focused legal tests pass.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -812,6 +822,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M37.1 · Mobile website app-like shell | **Mobile website now behaves more like a native app.** At phone widths the desktop navigation becomes a compact top bar with an account action plus a fixed bottom tab bar for Home, Browse, Stays, Farm and Account; content and footer reserve safe-area/tab space. Desktop navigation remains unchanged. | `backend/resources/views/layouts/app.blade.php` · `backend/resources/css/app.css` · `backend/public/css/app.css` · `plan.md` |
 | 2026-09-19 | M36.1 · Clean sharp typography and UI pass | **Applied a cleaner, sharper visual language.** Website and admin surfaces now use Inter Tight, lighter heading/control weights, sharper radii, flatter shadows and crisp borders; Flutter uses Inter Tight with lighter app-bar/button weights and smaller control/card radii. Served CSS published. **253 backend tests / 942 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/resources/css/{tokens,app,admin-tokens,admin}.css` · `backend/public/css/` · `mobile/lib/core/theme/{tokens,app_theme}.dart` · `plan.md` |
 | 2026-09-19 | M35.1 · Modern responsive public search/filter UI | **Reworked public filter forms for fluid layouts.** `/stays` (PG/rentals/homestays), `/catalog` and `/reseller-produce` now use visible labels, responsive filter cards, full-width controls, grouped Search/Clear actions and mobile 2-column/1-column collapse. Served CSS republished. **253 backend tests / 942 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/resources/css/app.css` · `backend/public/css/app.css` · `backend/resources/views/pages/{catalog,stays,reseller-produce}.blade.php` · `plan.md` |
 | 2026-09-19 | M34.1 · Responsive UI fluidity audit | **Responsive audit completed.** The website navigation now wraps and stacks below 768px instead of overflowing narrow screens; served CSS was republished. Flutter layouts were statically checked for scrollable parents, `Expanded`/`Flexible`/`Wrap` usage and fixed-width overflow. No additional mobile overflow was found. Residual risk: final browser-width and physical-device/keyboard walkthrough still required. | `backend/resources/css/app.css` · `backend/public/css/app.css` · `mobile/lib/` · `plan.md` |
