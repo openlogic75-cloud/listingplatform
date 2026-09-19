@@ -129,4 +129,24 @@
             </div>
         </div>
     </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Open source</h2>
+            <p>
+                This platform is open source. The full source code is public and
+                free to use under the MIT licence: read it, run it, adapt it, or
+                build your own version from it. If you want to contribute, you
+                are welcome to.
+            </p>
+            <p>
+                Report a bug, suggest a change, or open a pull request on the
+                repository. Contributions are reviewed like anyone else's work,
+                and the same standards of privacy and honest dealing apply to
+                the code as to the platform.
+            </p>
+            <a class="btn btn-primary" href="{{ config('branding.repository_url') }}"
+               target="_blank" rel="noopener noreferrer">View the source and contribute</a>
+        </div>
+    </section>
 @endsection

@@ -10,6 +10,13 @@
 return [
     'name' => env('BRAND_NAME', 'Local Goods Marketplace'),
 
+    // Public source repository (M29.1). Shown on the About page so anyone can
+    // read, use or contribute to the source.
+    'repository_url' => env(
+        'SOURCE_REPO_URL',
+        'https://github.com/openlogic75-cloud/listingplatform',
+    ),
+
     'tagline' => env(
         'BRAND_TAGLINE',
         'Local goods, honest sourcing, direct connections.',
