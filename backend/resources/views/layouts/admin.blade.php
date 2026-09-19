@@ -63,6 +63,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.collectors.index') }}"
+                       @if (request()->routeIs('admin.collectors.*')) aria-current="page" @endif>
+                        Collectors
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.posts.index') }}"
                        @if (request()->routeIs('admin.posts.*')) aria-current="page" @endif>
                         Blog

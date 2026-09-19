@@ -61,6 +61,12 @@
                                @checked($district->is_active)>
                         <span class="small">Active</span>
                     </label>
+                    <label class="checkbox" for="district-{{ $district->id }}-hub">
+                        <input id="district-{{ $district->id }}-hub"
+                               type="checkbox" name="is_hub" value="1"
+                               @checked($district->is_hub)>
+                        <span class="small">Hub (collectors deliver here)</span>
+                    </label>
                     <button class="button secondary" type="submit">Save district</button>
                 </form>
 

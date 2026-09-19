@@ -32,10 +32,14 @@ class Product extends Model
 
     public const CATEGORY_RENTAL_HOMESTAY = 'rental_homestay';
 
+    /** Farm produce listed in bulk for resellers (M28.2). */
+    public const CATEGORY_FARM_RESELLER = 'farm_reseller';
+
     public const CATEGORIES = [
         self::CATEGORY_TRADITIONAL,
         self::CATEGORY_AGRO,
         self::CATEGORY_RENTAL_HOMESTAY,
+        self::CATEGORY_FARM_RESELLER,
     ];
 
     public const STATUS_DRAFT = 'draft';

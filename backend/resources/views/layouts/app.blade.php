@@ -18,6 +18,7 @@
             <ul>
                 <li><a href="{{ route('catalog') }}">Catalog</a></li>
                 <li><a href="{{ route('stays') }}">PG &amp; stays</a></li>
+                <li><a href="{{ route('reseller.produce') }}">Farm produce</a></li>
                 <li><a href="{{ route('workers') }}">Skilled workers</a></li>
                 <li><a href="{{ route('transport') }}">Transport &amp; errands</a></li>
                 <li><a href="{{ route('blog') }}">Blog</a></li>

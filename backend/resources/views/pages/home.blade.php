@@ -68,6 +68,29 @@
         </section>
     @endif
 
+    @if ($farmProduce->isNotEmpty())
+        <section class="section">
+            <div class="container">
+                <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2);">
+                    <div>
+                        <h2>Farm produce for resellers</h2>
+                        <p style="color: var(--color-muted); max-width: 65ch;">
+                            Bulk farm produce direct from farmers. A collector
+                            can bring it in from the sub-division to a hub
+                            district.
+                        </p>
+                    </div>
+                    <a class="btn btn-secondary" href="{{ route('reseller.produce') }}">See all farm produce</a>
+                </div>
+                <div class="product-grid">
+                    @foreach ($farmProduce as $product)
+                        @include('components.product-card', ['product' => $product])
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     <section class="section">
         <div class="container">
             <h2>Browse without an account</h2>

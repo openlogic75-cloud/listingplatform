@@ -4,7 +4,7 @@
 
 @section('content')
     <section class="container section">
-        <p class="breadcrumb"><a href="{{ route('catalog') }}">Catalog</a> / {{ ['traditional' => 'Traditional', 'agro' => 'Agro', 'rental_homestay' => 'Rental / Homestay'][$product->category] ?? $product->category }}</p>
+        <p class="breadcrumb"><a href="{{ route('catalog') }}">Catalog</a> / {{ ['traditional' => 'Traditional', 'agro' => 'Agro', 'rental_homestay' => 'Rental / Homestay', 'farm_reseller' => 'Farm produce (reseller)'][$product->category] ?? $product->category }}</p>
 
         <div class="listing-detail">
             <div class="listing-media">

@@ -12,7 +12,7 @@
 
         <div class="product-card-meta">
             <span class="chip chip-{{ str_replace('_', '-', $product->category) }}">
-                {{ ['traditional' => 'Traditional', 'agro' => 'Agro', 'rental_homestay' => 'Rental / Homestay'][$product->category] ?? $product->category }}
+                {{ ['traditional' => 'Traditional', 'agro' => 'Agro', 'rental_homestay' => 'Rental / Homestay', 'farm_reseller' => 'Farm produce (reseller)'][$product->category] ?? $product->category }}
             </span>
             @if ($product->verified_badge !== null)
                 <span class="chip chip-verified" title="Verified by {{ $product->verified_badge->volunteer_name }}">

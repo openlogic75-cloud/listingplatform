@@ -54,10 +54,13 @@ class LocalityController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'is_active' => ['nullable', 'boolean'],
+            'is_hub' => ['nullable', 'boolean'],
         ]);
 
         $district->name = $data['name'];
         $district->is_active = $request->boolean('is_active');
+        // Hub districts are where collectors deliver farm produce (M28.1).
+        $district->is_hub = $request->boolean('is_hub');
         $district->save();
 
         return redirect()

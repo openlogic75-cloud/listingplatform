@@ -64,6 +64,14 @@ class MemberAuthController extends Controller
             ]);
         }
 
+        // Collectors are signed to a sub-division first (M28.1).
+        if ($user->role === User::ROLE_COLLECTOR
+            && ! ($user->collectorAssignment?->is_active ?? false)) {
+            throw ValidationException::withMessages([
+                'email' => ['Your collector account is awaiting assignment to a sub-division.'],
+            ]);
+        }
+
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 

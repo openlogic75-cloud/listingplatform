@@ -29,6 +29,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     ('traditional', 'Traditional'),
     ('agro', 'Agro'),
     ('rental_homestay', 'Rental / Homestay'),
+    ('farm_reseller', 'Farm produce (reseller)'),
   ];
 
   @override

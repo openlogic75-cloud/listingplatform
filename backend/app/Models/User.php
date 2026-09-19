@@ -145,6 +145,14 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * The sub-division a collector is signed to (M28.1), if any.
+     */
+    public function collectorAssignment(): HasOne
+    {
+        return $this->hasOne(CollectorAssignment::class);
+    }
+
     public function deviceTokens(): HasMany
     {
         return $this->hasMany(DeviceToken::class);

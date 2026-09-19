@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\Admin\AuthController;
+use App\Http\Controllers\Web\Admin\CollectorController as AdminCollectorController;
 use App\Http\Controllers\Web\Admin\DataRequestController;
 use App\Http\Controllers\Web\Admin\DonationSettingsController;
 use App\Http\Controllers\Web\Admin\LocalityController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Web\Admin\VerificationFeeSettingsController;
 use App\Http\Controllers\Web\Admin\VolunteerController as AdminVolunteerController;
 use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\CatalogController;
+use App\Http\Controllers\Web\CollectionController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DonationController;
 use App\Http\Controllers\Web\DriverBaseController;
@@ -24,6 +26,7 @@ use App\Http\Controllers\Web\PageController;
 use App\Http\Controllers\Web\PostController;
 use App\Http\Controllers\Web\ReferralController;
 use App\Http\Controllers\Web\ReferralLandingController;
+use App\Http\Controllers\Web\ResellerProduceController;
 use App\Http\Controllers\Web\StayController;
 use App\Http\Controllers\Web\TransportController;
 use App\Http\Controllers\Web\VendorBookingController;
@@ -44,6 +47,7 @@ Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/disclaimer', [PageController::class, 'disclaimer'])->name('disclaimer');
 Route::get('/catalog', CatalogController::class)->name('catalog');
 Route::get('/stays', [StayController::class, 'index'])->name('stays');
+Route::get('/reseller-produce', [ResellerProduceController::class, 'index'])->name('reseller.produce');
 Route::get('/workers', [WorkerController::class, 'index'])->name('workers');
 Route::get('/transport', [TransportController::class, 'index'])->name('transport');
 Route::get('/blog', [PostController::class, 'index'])->name('blog');
@@ -120,6 +124,10 @@ Route::middleware('auth')->group(function () {
         ->name('dashboard.referrals.approve');
     Route::post('/dashboard/referrals/conversions/{event}/reject', [ReferralController::class, 'reject'])
         ->name('dashboard.referrals.reject');
+
+    // Vendor: request a farm-produce collection to a hub (M28.5).
+    Route::post('/dashboard/collections', [CollectionController::class, 'store'])
+        ->name('dashboard.collections.store');
 });
 
 // Admin dashboard (M4.1/M6.2/M7.3). Session sign-in, then a role check: only
@@ -162,6 +170,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/skills', [SkillCategoryController::class, 'index'])->name('skills.index');
         Route::post('/skills', [SkillCategoryController::class, 'store'])->name('skills.store');
         Route::put('/skills/{skillCategory}', [SkillCategoryController::class, 'update'])->name('skills.update');
+
+        // Collector signing (M28.1).
+        Route::get('/collectors', [AdminCollectorController::class, 'index'])->name('collectors.index');
+        Route::post('/collectors/assign', [AdminCollectorController::class, 'assign'])->name('collectors.assign');
+        Route::post('/collectors/{assignment}/revoke', [AdminCollectorController::class, 'revoke'])->name('collectors.revoke');
 
         // Blog / community stories (M22.1).
         Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');

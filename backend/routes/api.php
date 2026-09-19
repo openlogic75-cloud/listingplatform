@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\CollectionController;
+use App\Http\Controllers\Api\CollectorController;
 use App\Http\Controllers\Api\ConsentController;
 use App\Http\Controllers\Api\DataDeletionController;
 use App\Http\Controllers\Api\DataExportController;
@@ -21,6 +23,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReferralController;
 use App\Http\Controllers\Api\RegistrationController;
+use App\Http\Controllers\Api\ResellerProduceController;
 use App\Http\Controllers\Api\StayController;
 use App\Http\Controllers\Api\TransportDirectoryController;
 use App\Http\Controllers\Api\VendorBookingController;
@@ -41,6 +44,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/vendors/{vendor}', [VendorController::class, 'show']);
     Route::get('/workers', [WorkerDirectoryController::class, 'index']);
     Route::get('/transport', [TransportDirectoryController::class, 'index']);
+    Route::get('/reseller-produce', [ResellerProduceController::class, 'index']);
     Route::get('/posts', [PostController::class, 'index']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
 
@@ -108,6 +112,16 @@ Route::prefix('v1')->group(function () {
         // Driver online/offline toggle (M4.3).
         Route::get('/driver/availability', [DriverAvailabilityController::class, 'show']);
         Route::put('/driver/availability', [DriverAvailabilityController::class, 'update'])
+            ->middleware('throttle:30,1');
+
+        // Collector sub-division + farm-produce collections (M28).
+        Route::get('/collector/assignment', [CollectorController::class, 'assignment']);
+        Route::post('/collections', [CollectionController::class, 'store'])
+            ->middleware('throttle:30,1');
+        Route::get('/collections', [CollectionController::class, 'index']);
+        Route::post('/collections/{job}/accept', [CollectionController::class, 'accept'])
+            ->middleware('throttle:30,1');
+        Route::post('/collections/{job}/status', [CollectionController::class, 'updateStatus'])
             ->middleware('throttle:30,1');
 
         // Logistics jobs: vendor creates, driver accepts/progresses (M4.4).

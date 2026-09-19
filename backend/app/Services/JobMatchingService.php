@@ -2,15 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\CollectorAssignment;
 use App\Models\District;
-use App\Models\DriverAvailability;
 use App\Models\Errand;
 use App\Models\Locality;
 use App\Models\LogisticsJob;
-use App\Models\RiderBaseOperation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Shared job matcher for logistics (M4.4) and errands (M4.5).
@@ -79,7 +77,7 @@ class JobMatchingService
         /** @var User $driver */
         $driver = $drivers->first();
 
-                $updates = ['driver_id' => $driver->id, 'status' => LogisticsJob::STATUS_ASSIGNED];
+        $updates = ['driver_id' => $driver->id, 'status' => LogisticsJob::STATUS_ASSIGNED];
 
         if ($job instanceof LogisticsJob) {
             $updates['assigned_at'] = now();
@@ -96,5 +94,20 @@ class JobMatchingService
     public function availableDriverCount(int $localityId): int
     {
         return $this->eligibleDrivers($localityId)->count();
+    }
+
+    /**
+     * The collector signed to a sub-division (M28.3), or null. Collections do
+     * not depend on online state — the admin signed them to that locality.
+     */
+    public function collectorFor(int $localityId): ?User
+    {
+        $assignment = CollectorAssignment::query()
+            ->active()
+            ->where('locality_id', $localityId)
+            ->with('user')
+            ->first();
+
+        return $assignment?->user;
     }
 }

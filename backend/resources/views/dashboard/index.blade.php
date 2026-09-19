@@ -104,6 +104,99 @@
 
                 <div class="dash-card dash-card--wide">
                     <div class="dash-card-head">
+                        <h2>Farm-produce collections</h2>
+                    </div>
+                    <p class="muted small">
+                        Ask a collector to bring a bulk farm-produce listing
+                        from its sub-division to a hub district. The fee is
+                        paid directly to the collector — the platform takes
+                        nothing.
+                    </p>
+
+                    @if ($farmListings->isEmpty() || $hubs->isEmpty())
+                        <div class="dash-empty">
+                            <p>
+                                @if ($hubs->isEmpty())
+                                    No hub districts are set up yet. An administrator marks them.
+                                @else
+                                    Publish a farm-produce listing in the “Farm produce (reseller)” category first.
+                                @endif
+                            </p>
+                        </div>
+                    @else
+                        <form method="post" action="{{ route('dashboard.collections.store') }}">
+                            @csrf
+                            <div class="dash-form-grid">
+                                <div class="field field--full">
+                                    <label for="collection-product">Farm-produce listing</label>
+                                    <select id="collection-product" name="product_id" required>
+                                        <option value="">Choose a listing</option>
+                                        @foreach ($farmListings as $listing)
+                                            <option value="{{ $listing->id }}" @selected((string) old('product_id') === (string) $listing->id)>
+                                                {{ $listing->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('product_id')<p class="field-error" role="alert">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="field">
+                                    <label for="collection-hub">Hub district</label>
+                                    <select id="collection-hub" name="destination_district_id" required>
+                                        <option value="">Choose a hub</option>
+                                        @foreach ($hubs as $hub)
+                                            <option value="{{ $hub->id }}" @selected((string) old('destination_district_id') === (string) $hub->id)>{{ $hub->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('destination_district_id')<p class="field-error" role="alert">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="field">
+                                    <label for="collection-fee">Fee for the collector <span class="muted small">(₹, optional)</span></label>
+                                    <input id="collection-fee" name="fee_inr" type="number" min="0" step="0.01"
+                                           value="{{ old('fee_inr') }}" inputmode="decimal">
+                                    @error('fee_inr')<p class="field-error" role="alert">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="field field--full">
+                                    <label for="collection-address">Pickup address or landmark <span class="muted small">(optional)</span></label>
+                                    <input id="collection-address" name="address" type="text" maxlength="500"
+                                           value="{{ old('address') }}">
+                                    @error('address')<p class="field-error" role="alert">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="field field--full">
+                                    <button class="btn btn-primary" type="submit">Request collection</button>
+                                </div>
+                            </div>
+                        </form>
+                    @endif
+
+                    @if ($collections->isNotEmpty())
+                        <ul class="dash-list">
+                            @foreach ($collections as $collection)
+                                <li class="dash-row">
+                                    <div class="dash-row-body">
+                                        <div class="dash-row-title">
+                                            {{ $collection->locality?->name ?? 'Farm' }}
+                                            → {{ $collection->destinationDistrict?->name ?? 'hub' }}
+                                        </div>
+                                        <div class="dash-row-meta">
+                                            Requested {{ $collection->created_at->format('d M Y') }}
+                                            @if ($collection->fee_inr)
+                                                &middot; ₹{{ number_format($collection->fee_inr, 2) }}
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <span class="chip chip-{{ $collection->status }}">{{ \Illuminate\Support\Str::headline($collection->status) }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+
+                <div class="dash-card dash-card--wide">
+                    <div class="dash-card-head">
                         <h2 id="my-listings">My listings</h2>
                         <a class="small" href="{{ route('vendor.listings.create') }}">Add another</a>
                     </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Media;
+use App\Models\Product;
 use App\Models\Vendor;
 use App\Rules\ActiveLocality;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,7 +29,7 @@ abstract class ListingRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:120'],
-            'category' => ['required', 'string', 'in:'.implode(',', Vendor::CATEGORIES)],
+            'category' => ['required', 'string', 'in:'.implode(',', Product::CATEGORIES)],
             'description' => ['nullable', 'string', 'max:5000'],
             'price' => [
                 'nullable',

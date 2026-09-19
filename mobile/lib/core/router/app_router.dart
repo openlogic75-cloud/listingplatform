@@ -11,6 +11,7 @@ import '../../features/blog/stories_screen.dart';
 import '../../features/blog/story_screen.dart';
 import '../../features/catalog/catalog_screen.dart';
 import '../../features/catalog/listing_detail_screen.dart';
+import '../../features/collector/collector_home_screen.dart';
 import '../../features/directory/transport_directory_screen.dart';
 import '../../features/directory/workers_directory_screen.dart';
 import '../../features/donations/donations_screen.dart';
@@ -25,6 +26,7 @@ import '../../features/home/home_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/vendor/bookings/vendor_bookings_screen.dart';
+import '../../features/vendor/collections/collection_request_screen.dart';
 import '../../features/vendor/listings/listing_edit_screen.dart';
 import '../../features/vendor/listings/listings_screen.dart';
 import '../../features/vendor/profile/vendor_profile_screen.dart';
@@ -76,6 +78,12 @@ final Provider<GoRouterConfig> goRouterProvider = Provider<GoRouterConfig>((Ref 
           name: 'stays',
           builder: (BuildContext context, GoRouterState state) =>
               const CatalogScreen(initialCategory: 'rental_homestay'),
+        ),
+        GoRoute(
+          path: '/farm-produce',
+          name: 'farm-produce',
+          builder: (BuildContext context, GoRouterState state) =>
+              const CatalogScreen(initialCategory: 'farm_reseller'),
         ),
         GoRoute(
           path: '/stories',
@@ -194,6 +202,18 @@ final Provider<GoRouterConfig> goRouterProvider = Provider<GoRouterConfig>((Ref 
           name: 'errand-lookup',
           builder: (BuildContext context, GoRouterState state) =>
               const ErrandLookupScreen(),
+        ),
+        GoRoute(
+          path: '/collector',
+          name: 'collector-home',
+          builder: (BuildContext context, GoRouterState state) =>
+              const CollectorHomeScreen(),
+        ),
+        GoRoute(
+          path: '/collections/new',
+          name: 'collection-request',
+          builder: (BuildContext context, GoRouterState state) =>
+              const CollectionRequestScreen(),
         ),
         GoRoute(
           path: '/volunteer',

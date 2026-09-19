@@ -18,6 +18,13 @@ class HomeController extends Controller
                 ->latest()
                 ->limit(4)
                 ->get(),
+            // Bulk farm produce for resellers (M28.2).
+            'farmProduce' => Product::query()
+                ->active()
+                ->where('category', Product::CATEGORY_FARM_RESELLER)
+                ->latest()
+                ->limit(4)
+                ->get(),
         ]);
     }
 }

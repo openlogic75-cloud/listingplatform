@@ -48,6 +48,14 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // Collectors are signed to a sub-division first (M28.1).
+        if ($user->role === User::ROLE_COLLECTOR
+            && ! ($user->collectorAssignment?->is_active ?? false)) {
+            return response()->json([
+                'message' => 'Your collector account is awaiting assignment to a sub-division.',
+            ], 403);
+        }
+
         $token = $user->createToken($data['device_name'] ?? 'app')->plainTextToken;
 
         return response()->json([

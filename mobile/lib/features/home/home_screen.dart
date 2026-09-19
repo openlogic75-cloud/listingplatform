@@ -83,6 +83,14 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   _ActionCard(
+                    icon: Icons.agriculture_outlined,
+                    title: 'Farm produce for resellers',
+                    body: 'Bulk farm produce direct from farmers; collectors '
+                        'bring it to a hub district.',
+                    onTap: () => context.go('/farm-produce'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ActionCard(
                     icon: Icons.article_outlined,
                     title: 'Stories',
                     body: 'New businesses and farms, and the on-site visits '
@@ -125,6 +133,22 @@ class HomeScreen extends ConsumerWidget {
                     title: 'Incoming bookings',
                     body: 'Vendors: confirm and move bookings to delivered.',
                     onTap: () => context.go('/vendor/bookings'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ActionCard(
+                    icon: Icons.agriculture_outlined,
+                    title: 'Request a farm-produce collection',
+                    body: 'Vendors: have a bulk listing collected from its '
+                        'sub-division to a hub district.',
+                    onTap: () => context.go('/collections/new'),
+                  ),
+                  const SizedBox(height: 12),
+                  _ActionCard(
+                    icon: Icons.local_shipping_outlined,
+                    title: 'Collect farm produce',
+                    body: 'Collectors: your sub-division and the collections '
+                        'waiting there.',
+                    onTap: () => context.go('/collector'),
                   ),
                   const SizedBox(height: 12),
                   _ActionCard(
