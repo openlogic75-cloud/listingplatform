@@ -149,4 +149,20 @@
                target="_blank" rel="noopener noreferrer">View the source and contribute</a>
         </div>
     </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2>Built with AI</h2>
+            <p>
+                This project was built with the help of AI coding tools: the
+                opencode agent, using the GLM and DeepSeek language models.
+            </p>
+            <p>
+                It is a disclosure, not a claim of correctness. AI-assisted code
+                still has to pass the same tests, review and checks as anything
+                else, and mistakes are possible. If you spot one, report it on
+                the repository.
+            </p>
+        </div>
+    </section>
 @endsection

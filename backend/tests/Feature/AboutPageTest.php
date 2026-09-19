@@ -19,4 +19,14 @@ class AboutPageTest extends TestCase
             ->assertSee('MIT licence')
             ->assertSee('https://example.test/source');
     }
+
+    public function test_about_page_discloses_ai_assisted_build(): void
+    {
+        $this->get(route('about'))
+            ->assertOk()
+            ->assertSee('Built with AI')
+            ->assertSee('opencode')
+            ->assertSee('GLM')
+            ->assertSee('DeepSeek');
+    }
 }
