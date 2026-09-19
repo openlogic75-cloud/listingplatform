@@ -19,10 +19,11 @@ assets/icons/
 assets/illustrations art/
 UX/
 ui deisgns/
-# mobile/assets/icons/ is declared in pubspec.yaml, so the folder must exist in
-# a clone; exclude its contents but keep the placeholder README.
+# mobile/assets/icons/ and backend/public/icons/ are asset folders that must
+# exist in a clone; exclude their contents but keep an attribution README.
 mobile/assets/icons/*
 !mobile/assets/icons/README.md
-backend/public/icons/
+backend/public/icons/*
+!backend/public/icons/README.md
 backend/public/img/empty.svg
 backend/public/img/farm-girl.svg

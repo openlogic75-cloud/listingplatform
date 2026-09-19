@@ -22,6 +22,19 @@ guessed at.
   - `mobile/assets/icons/`
   - `backend/public/icons/`
 
+### Files used in this project
+
+Website (`backend/public/icons/`): `bike.svg`, `building-store.svg`,
+`heart-handshake.svg`, `home-2.svg`, `leaf.svg`, `map-pin.svg`, `motorbike.svg`,
+`phone-call.svg`, `rosette-discount-check.svg`, `shopping-cart.svg`, `tool.svg`,
+`truck-delivery.svg`, `user-plus.svg`.
+
+App (`mobile/assets/icons/`): `building-store.svg`, `heart-handshake.svg`,
+`map-pin.svg`, `rosette-discount-check.svg`, `tool.svg`, `truck-delivery.svg`,
+`user-plus.svg`.
+
+Each folder carries its own `README.md` naming the files to restore.
+
 ## Illustrations — unDraw
 
 - Source: https://undraw.co/illustrations
@@ -32,9 +45,13 @@ guessed at.
   - `backend/public/img/empty.svg`
   - `backend/public/img/farm-girl.svg`
 
-The two single files are referenced by the website (empty states and the home
-hero). Until they are restored, those spots render with the alt text instead of
-art.
+### Files used in this project
+
+- `backend/public/img/empty.svg` — empty states (`/catalog`, `/stays`,
+  `/reseller-produce`, `/donation`, `/vendor`, `/about`)
+- `backend/public/img/farm-girl.svg` — home hero
+
+Until they are restored, those spots render with the alt text instead of art.
 
 ## Illustrations — Flowbite
 
