@@ -140,6 +140,7 @@ listingplatform/
 | M24 | About page & content (raised 2026-09-19) | ✅ | 1/1 — stakeholders + full feature list |
 | M25 | Verification questionnaire + signed story (raised 2026-09-19) | 🔄 | 2/3 — backend/web + app questionnaire/stories ✅; volunteer photo upload pending |
 | M26 | Legal pages & DPDP compliance (raised 2026-09-19) | ✅ | 3/3 — legal pages, consent capture, app links/docs |
+| M27 | Production audit (raised 2026-09-19) | 🔄 | 0/8 — collector role, pickup client, evidence upload, export/consent/deletion, story link, catalog filters + launch blockers |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -629,6 +630,38 @@ listingplatform/
   > **Files:** `mobile/lib/features/auth/{register_screen,auth_controller,auth_repository}.dart` · `mobile/lib/features/profile/profile_screen.dart`
   > **Comment:** The app's register screen has a required 18+ / Terms+Privacy checkbox passed through to the API, and the profile screen links to the Terms, Privacy and Disclaimer pages on the website.
 
+### M27 · Production audit (2026-09-19) — status: 🔄 (cause→effect audit of every requirement)
+
+> Method: for each source requirement and feature, trace docs → DB → API → web → app and flag broken links and unhandled obligations. Verdict: **not production ready yet** — the core commerce/logistics/verification flows work end to end, but a registerable role is non-functional, one source requirement is unreachable from any client, the DPDP export is incomplete, and host/brand/app-signing decisions remain.
+
+- [ ] **M27.1 · Collector role is non-functional (or remove it)** — ⏸️ decision
+  > **Files:** `backend/app/Http/Controllers/Api/{DriverBaseController,DriverAvailabilityController,LogisticsController}.php` · `backend/app/Services/JobMatchingService.php` · `backend/app/Models/LogisticsJob.php` · `mobile/lib/features/driver/`
+  > **Comment:** collectors can register (M1.4 writes a `driver_availability` row) but `DriverBaseController`/`DriverAvailabilityController` reject any role that is not `driver`, `JobMatchingService` only ever matches `ROLE_DRIVER`, `logistics_jobs.collector_id` is never assigned, and no client has a collector screen. A collector account is a dead end. Decide: implement the pickup(collector)→delivery(driver) legs, or stop offering collector at registration.
+- [ ] **M27.2 · Vendor pickup/delivery request has no client** — 🆕
+  > **Files:** `backend/app/Http/Controllers/Web/…` · `mobile/lib/features/vendor/`
+  > **Comment:** `POST /logistics/jobs` exists (M4.4) but no web or app screen calls it, so "a farmer can connect to logistics to pick up items" (local-market.md) is unreachable. The app side is M13.3; the website side is missing. Add a request form on a booking.
+- [ ] **M27.3 · Volunteer report cannot attach evidence photos (app/web)** — 🆕
+  > **Files:** `mobile/lib/features/volunteer/verification_report_screen.dart` · `backend/app/Http/Controllers/Api/VerificationController.php`
+  > **Comment:** the M25.1 story is built from a verification's `evidence` photos, but the app's report screen submits notes/checklist/geo only (no photo picker), and the website has no report form. So the "story with the volunteer's photos" cannot currently be produced by any client. Add image upload via `POST /media` and send the paths as `evidence`.
+- [ ] **M27.4 · DPDP data export is incomplete** — 🆕
+  > **Files:** `backend/app/Services/DataExportService.php`
+  > **Comment:** export returns only the user row + consents. The right to access covers all personal data: bookings, errands, referrals/events, verifications/evidence, media, device tokens, notifications. Extend the export map (kept in one service).
+- [ ] **M27.5 · Missing consent rows: errand contact + notifications** — 🆕
+  > **Files:** `backend/app/Http/Controllers/Api/ErrandController.php` · `backend/app/Http/Controllers/Api/DeviceTokenController.php`
+  > **Comment:** M7.1 states consent is captured at errand request and notification opt-in, but neither writes a `consents` row (booking does). Add `errand_contact` and `notifications` consent rows at those points.
+- [ ] **M27.6 · Data deletion does not cover all PII** — 🆕
+  > **Files:** `backend/app/Services/DataDeletionService.php`
+  > **Comment:** deletion anonymizes the user, vendor and badges. Registered users' errand rows (`customer_id`) keep encrypted contact data, and media/device tokens/notifications are not cleared. Extend the deletion so erasure is end to end, per M7.3.
+- [ ] **M27.7 · Listing does not link to its verification story (app API)** — 🆕
+  > **Files:** `backend/app/Http/Resources/ProductResource.php` · `mobile/lib/features/catalog/listing_detail_screen.dart`
+  > **Comment:** the web listing links "Verified by …" to the story; the API returns `is_verified`/`verified_by` but not the story slug, so the app shows a badge with no way to read the record. Add the story slug to the resource and link it.
+- [ ] **M27.8 · Website catalog lacks area/price filters** — 🆕
+  > **Files:** `backend/app/Http/Controllers/Web/CatalogController.php` · `backend/resources/views/pages/catalog.blade.php`
+  > **Comment:** `/stays` has area + price filters; the general catalog still only searches `q`/`category` although the API supports district/locality/price. Minor parity gap.
+
+> **Already tracked, not duplicated here:** M13.1 app listing edit · M13.3 app vendor pickup UI · M14.1 admin listing moderation · M14.2 web notifications inbox · M21.3 app commission UI + errand referral capture · M25.3 app volunteer photo upload.
+> **Launch blockers (external/owner):** Q7 host confirmation + deploy not run (M8.4) · Q13 brand (M0.7) · `FCM_SERVER_KEY` unset (push inbox-only) · app release signing requires an Android SDK machine (M20.3) · legal identity env values unset (`LEGAL_*`) · no git remote (repo is a single point of failure).
+
 ---
 
 ## 7 · Open questions & decisions
@@ -663,6 +696,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M27 · Production audit | **Cause→effect audit of every requirement.** Verdict: not production ready. Findings filed as M27.1–M27.8: **collector role is a dead end** (registerable but base/availability reject non-drivers, matcher ignores collectors, no UI); **vendor pickup request has no client** (API only); **volunteer report can't attach evidence photos**, so the M25 story can't get photos; **DPDP export returns only user+consents**; **no consent rows for errand contact or notifications**; **deletion doesn't clear all PII** (errand contacts, media, tokens); no listing→story link in the API; web catalog lacks area/price filters. Existing app gaps already tracked (M13.1/M13.3/M14.1/M14.2/M21.3/M25.3). Launch blockers: Q7 deploy, Q13 brand, FCM key, app signing, `LEGAL_*` unset, no git remote. | `plan.md` |
 | 2026-09-19 | — · Repo recovery & flatten | **Disk pressure (94% full) truncated 31 git objects and the last commit**, breaking `git commit` (`bad object HEAD`). Repaired by deleting the empty objects, rebuilding the index from the working tree and re-creating the affected commits; then **flattened the repository into a single clean commit** (identical 8,114 tracked files; full history preserved in §8) after confirming `git status` clean, `git fsck` clean, `git gc` and a **full clone** succeed. Old `.git` backed up outside the repo. Also verified `backend/vendor/` is gitignored and untracked → **Q17 decided** (`.gitignore` + `composer install --no-dev`), closing M8.8. | `.git` (re-initialised) · `plan.md` |
 | 2026-09-19 | M22.2 + M25.2 · App stories + questionnaire | **App: stories reader and the platform visit questionnaire.** New blog feature (repository + `/stories` list + `/stories/:slug` detail with cover, date, featured business, body and the **visit photo grid**) with a home card; the blog API now returns `images`. The volunteer site-visit report fetches the platform questionnaire (`GET /api/v1/verification-questionnaire`) and submits `checklist` as `{question_id: yes/no}`, replacing two hardcoded checkboxes — so an approved visit's story carries the real answers. 2 new repository tests; **flutter analyze 0 issues, 15/15 tests**; backend 240 tests green, Pint clean. Volunteer photo upload in the app filed as M25.3. | `mobile/lib/features/blog/{blog_repository,stories_screen,story_screen}.dart` 🆕 · `mobile/lib/features/volunteer/{volunteer_repository,verification_report_screen}.dart` · `mobile/lib/core/router/app_router.dart` · `mobile/lib/features/home/home_screen.dart` · `mobile/test/blog_repository_test.dart` 🆕 · `backend/app/Http/Controllers/Api/PostController.php` · `plan.md` |
 | 2026-09-19 | M26 · Legal & DPDP compliance | **Terms, Privacy and Disclaimer pages + DPDP consent.** Full Terms (18 sections), DPDP-shaped Privacy (rights, retention, security, public fields, grievance) and Disclaimer (no vouching, verification is a record not a guarantee); operator details are env-driven (`config/legal.php`) and show a placeholder until set; footer links added. **Registration now requires explicit acceptance** (server-enforced) and records a `consents` row with the notice version; the app register screen has the 18+/Terms checkbox and the profile links to the legal pages. Consent notice + DPDP→implementation checklist in `docs/`. 4 new tests; **backend 240 tests green, Pint clean, flutter analyze 0/13**, assets published. | `backend/config/legal.php` 🆕 · `backend/resources/views/pages/{terms,privacy,disclaimer}.blade.php` · `backend/app/Http/Controllers/Web/PageController.php` · `backend/routes/web.php` · `backend/resources/views/layouts/app.blade.php` · `backend/resources/views/auth/register.blade.php` · `backend/app/Services/RegistrationService.php` · `backend/tests/Feature/LegalComplianceTest.php` 🆕 · `docs/dpdp/consent-notice.md` 🆕 · `docs/launch/compliance.md` 🆕 · `mobile/lib/features/auth/{register_screen,auth_controller,auth_repository}.dart` · `mobile/lib/features/profile/profile_screen.dart` · `plan.md` |
