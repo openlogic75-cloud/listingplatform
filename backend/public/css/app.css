@@ -345,27 +345,73 @@ a:hover {
 /* Catalog filters */
 
 .catalog-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
-    align-items: center;
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(150px, 1fr)) repeat(2, minmax(120px, 0.8fr)) auto;
+    gap: var(--space-2);
+    align-items: end;
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-alt);
+    box-shadow: var(--shadow-card);
     margin-bottom: var(--space-4);
 }
 
+.catalog-filter-field {
+    display: grid;
+    min-width: 0;
+    gap: 6px;
+}
+
+.catalog-filters--compact {
+    grid-template-columns: minmax(220px, 2fr) minmax(180px, 1fr) auto;
+}
+
+.catalog-filter-field label {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
 .catalog-filters input[type="search"],
+.catalog-filters input[type="number"],
 .catalog-filters select {
-    min-height: 44px;
-    padding: 8px 12px;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
     font: inherit;
     color: var(--color-ink);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+    transition: border-color var(--dur-fast) var(--ease-out),
+        box-shadow var(--dur-fast) var(--ease-out);
 }
 
-.catalog-filters input[type="search"] {
-    flex: 1 1 220px;
-    max-width: 360px;
+.catalog-filters input:hover,
+.catalog-filters select:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+}
+
+.catalog-filters input:focus-visible,
+.catalog-filters select:focus-visible {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.catalog-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 48px;
+}
+
+.catalog-filter-actions .btn {
+    white-space: nowrap;
 }
 
 .visually-hidden {
@@ -748,12 +794,41 @@ a:hover {
         font-size: 0.9rem;
     }
 
+    .catalog-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .catalog-filter-field:first-child,
+    .catalog-filter-actions {
+        grid-column: 1 / -1;
+    }
+
+    .catalog-filters--compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .catalog-filter-actions .btn {
+        flex: 1 1 140px;
+    }
+
     .listing-detail {
         grid-template-columns: 1fr;
     }
 
     .booking-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .catalog-filters {
+        grid-template-columns: 1fr;
+        padding: var(--space-2);
+    }
+
+    .catalog-filter-field:first-child,
+    .catalog-filter-actions {
+        grid-column: auto;
     }
 }
 

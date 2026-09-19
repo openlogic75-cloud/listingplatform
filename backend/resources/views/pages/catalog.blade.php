@@ -10,20 +10,26 @@
             list from the mobile app; browsing here needs no account.
         </p>
 
-        <form class="catalog-filters" method="GET" action="{{ route('catalog') }}">
-            <label class="visually-hidden" for="filter-q">Search listings</label>
-            <input id="filter-q" type="search" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Search titles and descriptions" maxlength="120">
-            <label class="visually-hidden" for="filter-category">Category</label>
-            <select id="filter-category" name="category">
-                <option value="">All categories</option>
-                <option value="traditional" @selected(($filters['category'] ?? '') === 'traditional')>Traditional</option>
-                <option value="agro" @selected(($filters['category'] ?? '') === 'agro')>Agro</option>
-                <option value="rental_homestay" @selected(($filters['category'] ?? '') === 'rental_homestay')>Rental / Homestay</option>
-            </select>
-            <button class="btn btn-primary" type="submit">Search</button>
-            @if (($filters['q'] ?? '') !== '' || ($filters['category'] ?? '') !== '')
-                <a class="btn btn-secondary" href="{{ route('catalog') }}">Clear</a>
-            @endif
+        <form class="catalog-filters catalog-filters--compact" method="GET" action="{{ route('catalog') }}">
+            <div class="catalog-filter-field">
+                <label for="filter-q">Search listings</label>
+                <input id="filter-q" type="search" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Titles and descriptions" maxlength="120">
+            </div>
+            <div class="catalog-filter-field">
+                <label for="filter-category">Category</label>
+                <select id="filter-category" name="category">
+                    <option value="">All categories</option>
+                    <option value="traditional" @selected(($filters['category'] ?? '') === 'traditional')>Traditional</option>
+                    <option value="agro" @selected(($filters['category'] ?? '') === 'agro')>Agro</option>
+                    <option value="rental_homestay" @selected(($filters['category'] ?? '') === 'rental_homestay')>Rental / Homestay</option>
+                </select>
+            </div>
+            <div class="catalog-filter-actions">
+                <button class="btn btn-primary" type="submit">Search</button>
+                @if (($filters['q'] ?? '') !== '' || ($filters['category'] ?? '') !== '')
+                    <a class="btn btn-secondary" href="{{ route('catalog') }}">Clear</a>
+                @endif
+            </div>
         </form>
 
         @if ($products->isEmpty())

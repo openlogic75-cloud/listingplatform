@@ -11,48 +11,60 @@
         </p>
 
         <form class="catalog-filters" method="GET" action="{{ route('stays') }}">
-            <label class="visually-hidden" for="stay-q">Search stays</label>
-            <input id="stay-q" type="search" name="q" value="{{ $filters['q'] ?? '' }}"
-                   placeholder="Search rooms, rentals and homestays" maxlength="120">
+            <div class="catalog-filter-field">
+                <label for="stay-q">Search stays</label>
+                <input id="stay-q" type="search" name="q" value="{{ $filters['q'] ?? '' }}"
+                       placeholder="Rooms, rentals and homestays" maxlength="120">
+            </div>
 
-            <label class="visually-hidden" for="stay-district">District</label>
-            <select id="stay-district" name="district_id">
-                <option value="">All districts</option>
-                @foreach ($districts as $district)
-                    <option value="{{ $district->id }}" @selected((string) ($filters['district_id'] ?? '') === (string) $district->id)>
-                        {{ $district->name }}
-                    </option>
-                @endforeach
-            </select>
+            <div class="catalog-filter-field">
+                <label for="stay-district">District</label>
+                <select id="stay-district" name="district_id">
+                    <option value="">All districts</option>
+                    @foreach ($districts as $district)
+                        <option value="{{ $district->id }}" @selected((string) ($filters['district_id'] ?? '') === (string) $district->id)>
+                            {{ $district->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-            <label class="visually-hidden" for="stay-locality">Locality</label>
-            <select id="stay-locality" name="locality_id">
-                <option value="">All localities</option>
-                @foreach ($districts as $district)
-                    @if ($district->localities->isNotEmpty())
-                        <optgroup label="{{ $district->name }}">
-                            @foreach ($district->localities as $locality)
-                                <option value="{{ $locality->id }}" @selected((string) ($filters['locality_id'] ?? '') === (string) $locality->id)>
-                                    {{ $locality->name }}
-                                </option>
-                            @endforeach
-                        </optgroup>
-                    @endif
-                @endforeach
-            </select>
+            <div class="catalog-filter-field">
+                <label for="stay-locality">Locality</label>
+                <select id="stay-locality" name="locality_id">
+                    <option value="">All localities</option>
+                    @foreach ($districts as $district)
+                        @if ($district->localities->isNotEmpty())
+                            <optgroup label="{{ $district->name }}">
+                                @foreach ($district->localities as $locality)
+                                    <option value="{{ $locality->id }}" @selected((string) ($filters['locality_id'] ?? '') === (string) $locality->id)>
+                                        {{ $locality->name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
 
-            <label class="visually-hidden" for="stay-min">Minimum price</label>
-            <input id="stay-min" type="number" name="min_price" min="0" step="0.01"
-                   value="{{ $filters['min_price'] ?? '' }}" placeholder="Min price">
+            <div class="catalog-filter-field">
+                <label for="stay-min">Minimum price</label>
+                <input id="stay-min" type="number" name="min_price" min="0" step="0.01"
+                       value="{{ $filters['min_price'] ?? '' }}" placeholder="No minimum">
+            </div>
 
-            <label class="visually-hidden" for="stay-max">Maximum price</label>
-            <input id="stay-max" type="number" name="max_price" min="0" step="0.01"
-                   value="{{ $filters['max_price'] ?? '' }}" placeholder="Max price">
+            <div class="catalog-filter-field">
+                <label for="stay-max">Maximum price</label>
+                <input id="stay-max" type="number" name="max_price" min="0" step="0.01"
+                       value="{{ $filters['max_price'] ?? '' }}" placeholder="No maximum">
+            </div>
 
-            <button class="btn btn-primary" type="submit">Search</button>
-            @if (collect($filters)->filter()->isNotEmpty())
-                <a class="btn btn-secondary" href="{{ route('stays') }}">Clear</a>
-            @endif
+            <div class="catalog-filter-actions">
+                <button class="btn btn-primary" type="submit">Search</button>
+                @if (collect($filters)->filter()->isNotEmpty())
+                    <a class="btn btn-secondary" href="{{ route('stays') }}">Clear</a>
+                @endif
+            </div>
         </form>
 
         @if ($products->isEmpty())
