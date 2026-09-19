@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\Admin\CollectorController as AdminCollectorControll
 use App\Http\Controllers\Web\Admin\DataRequestController;
 use App\Http\Controllers\Web\Admin\DonationSettingsController;
 use App\Http\Controllers\Web\Admin\LocalityController;
+use App\Http\Controllers\Web\Admin\PasswordController as AdminPasswordController;
 use App\Http\Controllers\Web\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Web\Admin\SkillCategoryController;
 use App\Http\Controllers\Web\Admin\TransportCategoryController;
@@ -141,6 +142,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::get('/password', [AdminPasswordController::class, 'edit'])->name('password.edit');
+        Route::post('/password/request', [AdminPasswordController::class, 'requestOtp'])
+            ->middleware('throttle:3,10')
+            ->name('password.request');
+        Route::post('/password/confirm', [AdminPasswordController::class, 'confirm'])
+            ->middleware('throttle:5,1')
+            ->name('password.confirm');
 
         // Donation settings (M6.2).
         Route::get('/donation', [DonationSettingsController::class, 'edit'])->name('donation.edit');

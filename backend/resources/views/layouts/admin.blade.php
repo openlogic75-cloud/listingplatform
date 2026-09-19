@@ -21,6 +21,12 @@
         <nav aria-label="Dashboard sections">
             <ul>
                 <li>
+                    <a href="{{ route('admin.password.edit') }}"
+                       @if (request()->routeIs('admin.password.*')) aria-current="page" @endif>
+                        Account security
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.donation.edit') }}"
                        @if (request()->routeIs('admin.donation.*')) aria-current="page" @endif>
                         Donation settings
