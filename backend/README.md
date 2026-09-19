@@ -1,12 +1,12 @@
 # Backend - Laravel API + Website
 
-One Laravel 11 application serving both the JSON API (`/api/v1/*`) for the
+One Laravel 12 application serving both the JSON API (`/api/v1/*`) for the
 Flutter app and the public website (Blade). Target deployment: Hostinger
 shared hosting (see `docs/decisions/Q7-hosting.md`).
 
 ## Requirements
 
-- PHP >= 8.2 with pdo_mysql (pdo_sqlite suffices for tests)
+- PHP >= 8.2 with pdo_mysql, mbstring, fileinfo, GD and DOM (pdo_sqlite suffices for tests)
 - Composer 2.x
 - MySQL 8 / MariaDB for local production-like runs (tests use in-memory SQLite)
 
@@ -32,8 +32,8 @@ php artisan serve                   # http://127.0.0.1:8000
 | `database/migrations/` | Full schema (users, vendors, districts, localities, rider bases, products, bookings, logistics, errands, verification, donations, referrals, DPDP, media) |
 | `resources/css/tokens.css` | Website design tokens (minimalist-swiss) |
 | `resources/css/admin-tokens.css` | Dashboard tokens (genesis) for the admin UI landing in M4.1/M6.2 |
-| `public/icons/` | Copied subset of `assets/icons/` (outline SVG, `currentColor`) |
-| `public/img/` | Copied illustrations from `assets/illustrations art/` |
+| `public/icons/` | Attribution placeholder; third-party icons are excluded (see `ATTRIBUTION.md`) |
+| `public/img/` | Attribution placeholder; third-party illustrations are excluded (see `ATTRIBUTION.md`) |
 
 ## API surface (phase 1)
 

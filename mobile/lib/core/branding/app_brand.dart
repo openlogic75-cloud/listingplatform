@@ -9,7 +9,7 @@ library;
 
 abstract final class AppBrand {
   /// Product name. Falls back to this everywhere the brand is spoken.
-  static const String name = 'Local Goods Marketplace';
+  static const String name = 'Shekuthi';
 
   /// One-line positioning statement, from the product brief.
   static const String tagline =

@@ -8,7 +8,7 @@
  * per assets/brand/README.md; until then the views fall back to the wordmark.
  */
 return [
-    'name' => env('BRAND_NAME', 'Local Goods Marketplace'),
+    'name' => env('BRAND_NAME', 'Shekuthi'),
 
     // Public source repository (M29.1). Shown on the About page so anyone can
     // read, use or contribute to the source.
@@ -28,5 +28,5 @@ return [
     'favicon' => env('BRAND_FAVICON', 'img/favicon.png'),
 
     // Alt text. Meaningful imagery gets a description, per the accessibility floor.
-    'logo_alt' => env('BRAND_LOGO_ALT', 'Local Goods Marketplace'),
+    'logo_alt' => env('BRAND_LOGO_ALT', 'Shekuthi'),
 ];

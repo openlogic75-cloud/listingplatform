@@ -10,7 +10,7 @@
   - Queue connection: `database`, but jobs run synchronously in requests until cron is confirmed.
   - Sessions: `database`.
 - Media on the `public` local disk first (S3-compatible object storage later, Q9).
-- PHP: target 8.2+ (this repo is authored against Laravel 11, which requires PHP >= 8.2).
+- PHP: target 8.2+ (this repo is authored against Laravel 12, which requires PHP >= 8.2).
 - Secrets only in `.env`; never committed.
 
 ## Still to confirm with the host

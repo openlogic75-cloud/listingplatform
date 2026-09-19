@@ -1,12 +1,12 @@
-# Local Goods Marketplace
+# Shekuthi
 
-Open-source platform connecting buyers, sellers/vendors (farmers, traditional and agro products, rentals/homestays), logistics (drivers/riders, collectors), skilled workers and verification volunteers. The platform handles no transactions and charges no commission - it runs on donations (UPI).
+Shekuthi is an open-source platform connecting buyers, sellers/vendors (farmers, traditional and agro products, rentals/homestays), logistics (drivers/riders, collectors), skilled workers and verification volunteers. The platform handles no transactions and charges no commission - it runs on donations (UPI).
 
 ## Repository layout
 
 | Path | What it is |
 |---|---|
-| `backend/` | Laravel 11 (PHP 8.2+) - JSON API for the app + public website (Blade). One folder for both, as deployed on Hostinger. |
+| `backend/` | Laravel 12 (PHP 8.2+) - JSON API for the app + public website (Blade). One folder for both, as deployed on Hostinger. |
 | `mobile/` | Flutter (Dart) - single role-based Android app (buyer guest, vendor, driver, collector, skilled worker, volunteer). |
 | `docs/` | Decisions (one ADR per open question), design tokens, deploy notes. |
 | `plan.md` | Status tracker - every task has status, comment and owning file paths. Update it with every change. |
@@ -33,7 +33,7 @@ php artisan migrate --seed        # seeds example districts/localities (replace 
 php artisan serve                 # http://127.0.0.1:8000
 ```
 
-API base: `http://127.0.0.1:8000/api/v1`. Website: `http://127.0.0.1:8000/`.
+Local API base: `http://127.0.0.1:8000/api/v1`. Production website/API: `https://shekuthi.in/` and `https://shekuthi.in/api/v1`.
 
 ## Quick start - mobile
 

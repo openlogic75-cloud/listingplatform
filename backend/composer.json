@@ -1,7 +1,7 @@
 {
     "name": "listingplatform/backend",
     "type": "project",
-    "description": "Local Goods Marketplace - Laravel backend (JSON API) and website.",
+    "description": "Shekuthi - Laravel backend (JSON API) and website.",
     "license": "MIT",
     "require": {
         "php": "^8.2",

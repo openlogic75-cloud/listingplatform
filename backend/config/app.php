@@ -2,7 +2,7 @@
 
 return [
 
-    'name' => env('APP_NAME', 'Local Goods Marketplace'),
+    'name' => env('APP_NAME', 'Shekuthi'),
 
     'env' => env('APP_ENV', 'production'),
 

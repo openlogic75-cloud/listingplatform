@@ -1,6 +1,6 @@
 # Mobile - Flutter App (Android)
 
-Single role-based Flutter app: buyers browse as guests; vendors, drivers,
+Shekuthi is a single role-based Flutter app: buyers browse as guests; vendors, drivers,
 collectors, workers and volunteers register. Talks to the Laravel API in
 `../backend` at `/api/v1`.
 
@@ -42,7 +42,7 @@ flutter test
 | `lib/core/router/app_router.dart` | go_router configuration |
 | `lib/features/auth/` | Register (role selection) and login, session controller |
 | `lib/features/home/` | Home shell with milestone placeholders |
-| `assets/icons/` | Copied subset of `assets/icons/` (Tabler-style SVG, outline default) |
+| `assets/icons/` | Attribution placeholder; third-party Tabler SVGs are excluded (see `ATTRIBUTION.md`) |
 
 ## Hard rules
 

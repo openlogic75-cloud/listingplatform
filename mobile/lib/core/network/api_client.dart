@@ -5,22 +5,22 @@ import '../storage/token_storage.dart';
 
 /// Base URL for the Laravel API.
 ///
-/// Override at build/run time:
+/// Override at build/run time for local development:
 ///   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
 /// 10.0.2.2 is the Android emulator alias for the host machine loopback.
 const String kApiBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
-  defaultValue: 'http://10.0.2.2:8000/api/v1',
+  defaultValue: 'https://shekuthi.in/api/v1',
 );
 
 /// Public website base URL, minus the trailing slash.
 ///
 /// Used for shareable links (referral links, listing links) that open in a
 /// browser rather than the app. Point it at the deployed site:
-///   flutter build apk --dart-define=SITE_BASE_URL=https://example.org
+///   flutter build apk --dart-define=SITE_BASE_URL=https://shekuthi.in
 const String kSiteBaseUrl = String.fromEnvironment(
   'SITE_BASE_URL',
-  defaultValue: 'http://10.0.2.2:8000',
+  defaultValue: 'https://shekuthi.in',
 );
 
 /// Dio HTTP client wired with the Sanctum bearer token.

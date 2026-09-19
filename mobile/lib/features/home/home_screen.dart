@@ -20,7 +20,7 @@ class HomeScreen extends ConsumerWidget {
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
-            title: const Text('Local Goods Marketplace'),
+            title: const Text('Shekuthi'),
             actions: <Widget>[
               session.when(
                 data: (SessionState state) {

@@ -63,6 +63,8 @@
 
 - [ ] Brand name, logo, and palette decided and applied (logo in
       `public/img/`, tokens in `public/css/tokens.css`, favicon SVG).
+- [x] **Public brand name decided:** Shekuthi; production website/API domain is
+      `https://shekuthi.in`. Logo, favicon and final palette remain launch work.
 - [ ] Play Store listing assets prepared from the assets library
       (`assets/illustrations art/` for screenshots) — no fabricated metrics.
 

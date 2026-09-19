@@ -1,4 +1,4 @@
-# Local Goods Marketplace — Plan & Status Tracker
+# Shekuthi — Plan & Status Tracker
 
 > **This file is the single source of truth for build status.** Every task and sub-task carries a **status**, a **comment** (scope + decisions + dated notes), and the **file path(s)** that own it.
 > **Change rule:** a change to any feature touches *only* the files listed under that task's entry — update those files, append a dated note to the task comment, add a row to §8 Change log. Nothing else in the codebase needs to move. Process rules for coding agents live in `AGENTS.md`.
@@ -145,6 +145,7 @@ listingplatform/
 | M29 | Open-source distribution (raised 2026-09-19) | ✅ | 2/2 — MIT license + repo; About page source/contribution note and AI-built disclosure |
 | M30 | Media limits & optimisation (raised 2026-09-19) | ✅ | 1/1 — 2 MB upload cap, downscale to 1600 px + WebP, max 4 photos per listing |
 | M31 | Third-party asset hygiene (raised 2026-09-19) | ✅ | 1/1 — untracked third-party art/docs, credited owners + sources, gitignored |
+| M32 | Shekuthi brand + Hostinger deployment readiness (raised 2026-09-19) | 🔄 | 2/2 — public brand/domain update and shared-hosting audit complete; host/owner launch gates pending |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -725,6 +726,16 @@ listingplatform/
 
 ---
 
+### M32 · Shekuthi brand + Hostinger deployment readiness — status: 🔄 (raised 2026-09-19, owner request)
+
+- [x] **M32.1 · Rename public platform branding to Shekuthi and set shekuthi.in defaults** — ✅
+  > **Files:** `backend/config/{app,branding}.php` · `backend/.env.example` · `backend/.env.production.example` · `mobile/lib/{app.dart,core/branding/app_brand.dart,core/network/api_client.dart,features/home/home_screen.dart}` · `mobile/android/app/src/main/AndroidManifest.xml` · `mobile/ios/Runner/Info.plist` · `mobile/pubspec.yaml` · `backend/tests/Feature/AboutPageTest.php` · `README.md` · `backend/README.md` · `mobile/README.md` · `backend/composer.json` · `plan.md`
+  > **Comment:** Owner decision: the public platform name is **Shekuthi** and the website/API will be hosted at `https://shekuthi.in`. Keep internal package/repository identifiers stable; change user-facing branding and production URL defaults only.
+- [x] **M32.2 · Hostinger shared-hosting deployment audit + launch runbook** — ✅
+  > **Files:** `backend/.env.production.example` · `docs/deploy/hostinger.md` · `docs/launch/checklist.md` · `docs/decisions/Q7-hosting.md` · `plan.md`
+  > **Comment:** Verify PHP 8.2+, required extensions (including GD for image resize/WebP and DOM for PDF), MySQL, document root, storage symlink, HTTPS, cron, mail, legal identity, backups, and production caches. Verdict must distinguish code readiness from owner/host-dependent launch readiness.
+  > **Notes:** `— 2026-09-19: DELIVERED — local PHP 8.3.6 passed platform checks; required extensions present; config/route/view caches and scheduler listing passed; backend 251 tests / 930 assertions, Flutter analyze clean and 19/19 tests; deployment guide now names Shekuthi, `shekuthi.in`, exact env/cron/extension requirements, and smoke tests. The live domain currently returns Hostinger HTTP 404, so host setup is not complete.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -737,13 +748,13 @@ listingplatform/
 | Q4 | Donations model | ✅ decided 2026-09 | UPI ID + QR image, admin-uploaded; no gateway at launch | M6.1, M6.2 |
 | Q5 | MOQ semantics | ✅ decided 2026-09 | **Per-item** enforced at booking creation (qty ≥ product.moq); stock caps the maximum when set; stock is not auto-decremented (vendors manage it) — revisit if reservation is needed | M3.1, M1.3e |
 | Q6 | Volunteer TA/DA funding | ✅ decided 2026-09-18 | **Verification fee** (admin-set in the settings dashboard) paid by the vendor directly to the visiting volunteer — platform never touches the money; fee snapshot stored on the badge. See ADR `docs/decisions/Q6-verification-fee.md` | M5.1, M5.4, M5.3 |
-| Q7 | Hostinger limits | ⏸️ open | PHP version, cron availability, storage/S3 — decides queues, jobs, deploys. `— 2026-09-05: shared-hosting constraints decided (no Redis → database cache/session/queue drivers; synchronous jobs); ADR docs/decisions/Q7-hosting.md; cron + PHP pin still unconfirmed with host` `— 2026-09-18: cron decision (best practice) — use Laravel scheduler, ONE host cron entry `* * * * * php artisan schedule:run`; APP_CRON_ENABLED defaults OFF (safe: no automatic data deletion until explicitly enabled); manual `php artisan retention:sweep --dry-run` fallback documented in M7.5/M8.4. Host-side line registered at deploy (M8.4).` | M1.1, M7.5, M8.1, M8.4 |
+| Q7 | Hostinger limits | ⏸️ open | PHP version, cron availability, storage/S3 — decides queues, jobs, deploys. `— 2026-09-05: shared-hosting constraints decided (no Redis → database cache/session/queue drivers; synchronous jobs); ADR docs/decisions/Q7-hosting.md; cron + PHP pin still unconfirmed with host` `— 2026-09-18: cron decision (best practice) — use Laravel scheduler, ONE host cron entry `* * * * * php artisan schedule:run`; APP_CRON_ENABLED defaults OFF (safe: no automatic data deletion until explicitly enabled); manual `php artisan retention:sweep --dry-run` fallback documented in M7.5/M8.4. Host-side line registered at deploy (M8.4).` `— 2026-09-19: local PHP 8.3.6/platform checks pass; actual Hostinger plan PHP/extensions, document root, storage symlink, cron and backups remain host-side gates. shekuthi.in currently returns Hostinger 404.` | M1.1, M7.5, M8.1, M8.4, M32.2 |
 | Q8 | Maps & geocoding | ✅ decided 2026-09-18 | **No map SDK, no geocoding, no ETA, no live GPS.** Users only see which drivers are **online now** in which locality, from `driver_availability` + `rider_base_operations`. See ADR `docs/decisions/Q8-maps.md` | M4.6, M1.2 |
 | Q9 | Media storage | ⏸️ open | Local disk first; Hostinger Object Storage (S3-compatible) later? | M2.3 |
 | Q10 | Region, currency, language | ✅ decided 2026-09-18 | **India, Nagaland only** (both platform regions and launch). Currency ₹. English + Nagamese/local dialects as copy needs. No multi-region logic anywhere — districts/localities carry IDs (already the pattern). See ADR `docs/decisions/Q10-region.md` | M8.4, M8.5, M4.1 |
 | Q11 | Website UI template | ✅ decided 2026-09 | **minimalist-swiss-design.md** adopted; tokens in `backend/public/css/tokens.css`; ADR `docs/decisions/Q11-website-template.md` | M0.1, M0.4 |
 | Q12 | Dashboard UI system | ✅ decided 2026-09 | **genesis-DESIGN.md** adopted; tokens in `backend/public/css/admin-tokens.css`; ADR `docs/decisions/Q12-dashboard-system.md` | M0.2, M0.4 |
-| Q13 | Brand: name, logo, palette | ⏸️ open | Playbooks: ip-as-logo / brandkit / brand-guidelines | M0.7 |
+| Q13 | Brand: name, logo, palette | ⏸️ open | **Name decided: Shekuthi (2026-09-19).** Logo and final palette still need owner approval. Playbooks: ip-as-logo / brandkit / brand-guidelines | M0.7, M32.1 |
 | Q14 | Android min/target SDK | ✅ decided 2026-09 | Flutter defaults (minSdk 21); ADR `docs/decisions/Q14-android-sdk.md` | M1.2, M0.3 |
 | Q15 | Website registration scope | ✅ decided 2026-09-18 | **Web registration shipped for all registerable roles** (M8.6, owner request); buyers stay anonymous. M2.1's "(Q15 still open)" is closed by this | M2.1, M8.6 |
 | Q16 | Wireframes before screens? | 🚫 dropped 2026-09-18 | All role UIs shipped without a wireframe pass and passed state-walk reviews; not revisited unless a redesign lands | M2–M6 UI tasks |
@@ -757,6 +768,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M32 · Shekuthi + Hostinger readiness | **Public brand renamed to Shekuthi and production defaults target `https://shekuthi.in`.** User-facing web/app names, Android label, iOS display name, app title and documentation updated; internal package identifiers intentionally remain stable. Flutter release defaults now target the Shekuthi API/site while local development can still override them with `--dart-define`. Hostinger runbook updated with the deployment verdict, PHP/extensions (including GD and DOM), document-root/storage guidance, exact production env/cron/mail/legal requirements, cache commands and smoke tests. **Verdict: code is compatible with shared hosting, but public deployment is not ready until the Hostinger/owner launch gates are completed; the current domain returns Hostinger 404.** Backend 251 tests / 930 assertions; Flutter analyze clean, 19/19 tests. | `backend/config/{app,branding}.php` · `backend/.env.example` · `backend/.env.production.example` · `backend/composer.json` · `backend/tests/Feature/AboutPageTest.php` · `mobile/lib/{app.dart,core/branding/app_brand.dart,core/network/api_client.dart,features/home/home_screen.dart}` · `mobile/android/app/src/main/AndroidManifest.xml` · `mobile/ios/Runner/Info.plist` · `mobile/pubspec.yaml` · `README.md` · `backend/README.md` · `mobile/README.md` · `docs/deploy/hostinger.md` · `docs/launch/checklist.md` · `docs/decisions/Q7-hosting.md` · `plan.md` |
 | 2026-09-19 | M31.1 · Third-party asset hygiene | **Third-party art and reference docs removed from the repo and credited.** Untracked 7,675 files that are not our work — the Tabler icon sets, unDraw and Flowbite illustrations, `backend/public/img/*.svg`, the nine `UX/*_SKILL.md` and seven `ui deisgns/**` documents — and gitignored those paths; local copies stay on disk so development is unaffected. New `ATTRIBUTION.md` credits each owner with source links and a restore note: Tabler (MIT), unDraw, Flowbite, designmd.ai (Genesis/Verdana/WattVision, MIT), designmd.app (website templates, CC BY 4.0), jakubkrehel/skills, ehmo/platform-design-skills, sleekdotdesign/agent-skills, mattpocock/skills, Leonxlnx/taste-skill; four files marked source-unconfirmed rather than guessed. README updated; `mobile/assets/icons/README.md` placeholder keeps the pubspec asset path valid in a clone. Note: files still exist in earlier commits — a history rewrite is tracked as an open item. | `.gitignore` · `ATTRIBUTION.md` 🆕 · `README.md` · `mobile/assets/icons/README.md` 🆕 · `plan.md` |
 | 2026-09-19 | M30.1 · Media limits & optimisation | **2 MB cap, downscale + WebP, max 4 photos per listing.** Upload cap cut 5 MB → 2 MB in the shared validator, which now also **downscales the long side to 1600 px** (bicubic, alpha preserved) before the existing WebP q82 encode — so stored files are genuinely smaller, not just converted. Listings are capped at **4 photos** via one source of truth (`Product::MAX_IMAGES`) enforced in the API requests, the web form (including a total-on-edit guard) and the app picker; form copy/JS updated. Applies to all uploads (listing photos, UPI QR, verification evidence). 3 new tests; **backend 251 passed / 929 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/app/Support/UploadValidator.php` · `backend/app/Models/Product.php` · `backend/app/Http/Requests/{ListingRequest,UpdateListingRequest}.php` · `backend/app/Http/Controllers/Web/VendorListingController.php` · `backend/resources/views/dashboard/listing-form.blade.php` · `backend/public/js/listing-form.js` · `mobile/lib/features/vendor/listings/listing_edit_screen.dart` · `backend/tests/Feature/{MediaUploadTest,ListingsTest}.php` · `plan.md` |
 | 2026-09-19 | M29.2 · AI-built disclosure | **About page discloses that the project was built with AI.** New "Built with AI" section: built with the AI coding tool **opencode**, using the **GLM** and **DeepSeek** language models; states plainly that AI-assisted is not a claim of correctness — the same tests and review apply and mistakes are possible. Test asserts the disclosure renders. | `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md` |
@@ -839,10 +851,6 @@ listingplatform/
 ---
 
 *Generated from `local-market.md`, `additionalfeatures.txt`, `ui deisgns/`, `UX/`, `assets/`. Process rules for coding agents: `AGENTS.md`.*
-
-
-
-
 
 
 

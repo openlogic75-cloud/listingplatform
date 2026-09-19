@@ -15,6 +15,7 @@ class AboutPageTest extends TestCase
 
         $this->get(route('about'))
             ->assertOk()
+            ->assertSee('<title>About - Shekuthi</title>', false)
             ->assertSee('Open source')
             ->assertSee('MIT licence')
             ->assertSee('https://example.test/source');

@@ -13,7 +13,7 @@ class MarketplaceApp extends ConsumerWidget {
     final GoRouterConfig router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
-      title: 'Local Goods Marketplace',
+      title: 'Shekuthi',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
