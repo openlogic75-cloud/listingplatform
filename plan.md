@@ -155,6 +155,7 @@ listingplatform/
 | M39 | About-page AI attribution update (raised 2026-09-19) | ✅ | 1/1 — OpenCode and LLM attribution wording |
 | M40 | Android APK build and live API verification (raised 2026-09-19) | ✅ | 1/1 — 56.7 MB Shekuthi APK built and live public API verified; release keystore remains pending for store publishing |
 | M41 | Flutter bottom navigation shell (raised 2026-09-19) | ✅ | 1/1 — persistent Home/Browse/Farm/Account/Back navigation |
+| M42 | Navigation inset fix + causal functional audit (raised 2026-09-19) | 🔄 | 1/2 — safe-area fix and causal audit documented; physical-device verification pending |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -829,6 +830,18 @@ listingplatform/
   > **Comment:** Owner wants bottom navigation for Home and Back. Main app routes use a shared Material navigation shell with Home, Browse, Farm, Account and Back destinations; login/register remain focused screens outside the shell.
   > **Notes:** `— 2026-09-19: DELIVERED — ShellRoute wraps the main app routes with Material NavigationBar; login/register stay outside it. Flutter analyze clean, 19/19 tests passed. Rebuilt APK is 57.0 MB with SHA-256 `536e731773fac72e921a6a44ade00ee7ba5a0519cd36f7adce6ef4a2c8d8e82a` and includes the navigation shell.`
 
+---
+
+### M42 · Navigation inset fix + causal functional audit — status: 🔄 (raised 2026-09-19, owner request)
+
+- [x] **M42.1 · Make bottom navigation safe-area aware across phones** — ✅
+  > **Files:** `mobile/lib/core/navigation/app_shell.dart` · `plan.md`
+  > **Comment:** Owner reports Home/Back navigation overlap on some phones. Wrap the bottom navigation in the device safe area and verify its content is not obscured by Android gesture/navigation insets.
+- [x] **M42.2 · Audit plan requirements through data, logic, API, web, app and tests** — ✅
+  > **Files:** `docs/launch/functional-audit.md` 🆕 · `plan.md`
+  > **Comment:** Trace each plan milestone to its causal chain and record verified paths, partial paths, launch blockers and residual risks. Do not claim authenticated/device-only flows are verified from static tests alone.
+  > **Notes:** `— 2026-09-19: DELIVERED — audit document records working causal chains, M27 open gaps and production/device residual risks. SafeArea now wraps the Flutter NavigationBar; Flutter analyze/tests pass. Rebuilt APK includes the fix (57.0 MB, SHA-256 `cfd48257b4be7f95af78824e82339e5cc3c42c104cf4878e1f50d74f36f3017b`). Physical phone verification remains an external follow-up.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -862,6 +875,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M42 · Navigation inset fix + causal functional audit | **Fixed bottom navigation overlap risk** by wrapping the Flutter NavigationBar in `SafeArea(top: false)` and documented a causal audit from schema/logic through API/web/app/test evidence. Audit confirms core listing, booking, collection, legal and public-content paths, while keeping M27 DPDP, evidence, verification-story, pickup, parity, production and device gaps explicit. Rebuilt APK includes the fix: 57.0 MB, SHA-256 `cfd48257b4be7f95af78824e82339e5cc3c42c104cf4878e1f50d74f36f3017b`. | `mobile/lib/core/navigation/app_shell.dart` · `docs/launch/functional-audit.md` 🆕 · `plan.md` |
 | 2026-09-19 | M41.1 · Flutter bottom navigation shell | **Added persistent mobile navigation.** Main app routes now use a shared Material bottom bar with Home, Browse, Farm, Account and Back destinations; authentication screens remain focused outside the shell. Rebuilt Shekuthi APK: 57.0 MB, SHA-256 `536e731773fac72e921a6a44ade00ee7ba5a0519cd36f7adce6ef4a2c8d8e82a`. Flutter analyze clean, 19/19 tests. | `mobile/lib/core/navigation/app_shell.dart` 🆕 · `mobile/lib/core/router/app_router.dart` · `plan.md` |
 | 2026-09-19 | M40.1 · Android APK build + live API verification | **Built a Shekuthi release APK** against `https://shekuthi.in` after installing a local JDK 17, Android SDK 36, build tools and NDK/CMake. APK: `mobile/build/app/outputs/flutter-apk/app-release.apk`, 56.7 MB, SHA-256 `c1b12e1731022633408b7915bdc05d0f945d7dfe71e436b2f2679649debcb7b8`. Live public API endpoints returned HTTP 200; Flutter analyze clean and 19/19 tests passed. The APK is valid for sideload testing but uses the Android debug certificate; Play Store release signing remains separate. | `plan.md` |
 | 2026-09-19 | M39.1 · About-page AI attribution update | **Expanded the About-page AI disclosure** to name the OpenCode coding agent and GPT, GLM and DeepSeek language models used during development. | `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md` |

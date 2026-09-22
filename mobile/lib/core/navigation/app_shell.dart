@@ -12,7 +12,11 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: child,
-      bottomNavigationBar: const _AppBottomNavigationBar(),
+      bottomNavigationBar: const SafeArea(
+        top: false,
+        minimum: EdgeInsets.only(bottom: 2),
+        child: _AppBottomNavigationBar(),
+      ),
     );
   }
 }
