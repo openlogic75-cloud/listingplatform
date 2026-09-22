@@ -153,6 +153,7 @@ listingplatform/
 | M37 | Mobile website app-like shell (raised 2026-09-19) | ✅ | 1/1 — mobile compact header and fixed bottom navigation |
 | M38 | Admin password change with email OTP (raised 2026-09-19) | ✅ | 1/1 — secure OTP-confirmed admin password change |
 | M39 | About-page AI attribution update (raised 2026-09-19) | ✅ | 1/1 — OpenCode and LLM attribution wording |
+| M40 | Android APK build and live API verification (raised 2026-09-19) | 🔄 | 0/1 — live API verified; APK blocked by missing Android SDK/signing |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -808,6 +809,15 @@ listingplatform/
   > **Files:** `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md`
   > **Comment:** Update the existing AI-built disclosure to name OpenCode and GPT, GLM and DeepSeek as the language models used during development.
   > **Notes:** `— 2026-09-19: DELIVERED — About now names the OpenCode agent and GPT, GLM and DeepSeek language models. Regression test updated.`
+
+---
+
+### M40 · Android APK build and live API verification — status: 🔄 (raised 2026-09-19, owner request)
+
+- [ ] **M40.1 · Build release APK and verify the live Shekuthi API surface** — 🔄
+  > **Files:** `mobile/` · `docs/deploy/hostinger.md` · `plan.md`
+  > **Comment:** Build the Flutter release APK with the Shekuthi API/site defaults, run analysis/tests, check the Android SDK and signing state, and smoke-test public API endpoints. APK sideload readiness and Play Store signing readiness must be reported separately.
+  > **Notes:** `— 2026-09-19: PARTIAL — live `/`, `/api/v1/locations`, `/api/v1/posts`, `/api/v1/stays` and `/api/v1/reseller-produce` returned HTTP 200; Flutter analyze clean and 19/19 tests passed. APK build is blocked locally because `flutter doctor` reports no Android SDK. Android release signing is also still debug-only in the project.`
 
 ## 7 · Open questions & decisions
 
