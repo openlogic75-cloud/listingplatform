@@ -173,8 +173,8 @@
         <div class="container">
             <h2>Built with AI</h2>
             <p>
-                This project was built with the help of AI coding tools: the
-                opencode agent, using the GLM and DeepSeek language models.
+                This project was built with the help of the OpenCode coding
+                agent and language models including GPT, GLM and DeepSeek.
             </p>
             <p>
                 It is a disclosure, not a claim of correctness. AI-assisted code

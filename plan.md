@@ -152,6 +152,7 @@ listingplatform/
 | M36 | Clean sharp typography and UI pass (raised 2026-09-19) | ✅ | 1/1 — lighter Inter Tight typography, sharper radii and crisp surfaces |
 | M37 | Mobile website app-like shell (raised 2026-09-19) | ✅ | 1/1 — mobile compact header and fixed bottom navigation |
 | M38 | Admin password change with email OTP (raised 2026-09-19) | ✅ | 1/1 — secure OTP-confirmed admin password change |
+| M39 | About-page AI attribution update (raised 2026-09-19) | ✅ | 1/1 — OpenCode and LLM attribution wording |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -799,6 +800,15 @@ listingplatform/
   > **Comment:** Owner wants `contact@shekuthi.in` to be the initial admin login and a temporary password that can be changed from the admin dashboard. Password changes require a six-digit email OTP, expiry and attempt limits; the temporary password is never stored in code.
   > **Notes:** `— 2026-09-19: DELIVERED — `/admin/password` sends a hashed-OTP confirmation email, expires codes after 10 minutes, limits attempts to five, consumes the code once and updates the password only after confirmation. SMTP for `contact@shekuthi.in` must be configured in production. 2 tests / 15 assertions passed.`
 
+---
+
+### M39 · About-page AI attribution update — status: ✅ (raised 2026-09-19, owner request)
+
+- [x] **M39.1 · Name OpenCode and the LLMs used in the About disclosure** — ✅
+  > **Files:** `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md`
+  > **Comment:** Update the existing AI-built disclosure to name OpenCode and GPT, GLM and DeepSeek as the language models used during development.
+  > **Notes:** `— 2026-09-19: DELIVERED — About now names the OpenCode agent and GPT, GLM and DeepSeek language models. Regression test updated.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -832,6 +842,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M39.1 · About-page AI attribution update | **Expanded the About-page AI disclosure** to name the OpenCode coding agent and GPT, GLM and DeepSeek language models used during development. | `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md` |
 | 2026-09-19 | M38.1 · Admin password change with email OTP | **Added secure admin password changes.** `/admin/password` sends a six-digit OTP to the logged-in admin email; codes are hashed, expire after 10 minutes, allow five attempts and are single-use. New password hashes are stored only with the pending challenge until the OTP is confirmed. Initial `contact@shekuthi.in` admin creation remains a one-time SSH/Tinker operation; configure Hostinger SMTP before using email confirmation. 2 tests / 15 assertions. | `backend/database/migrations/2026_09_19_000004_create_password_change_otps_table.php` 🆕 · `backend/app/Models/PasswordChangeOtp.php` 🆕 · `backend/app/Mail/AdminPasswordOtpMail.php` 🆕 · `backend/resources/views/emails/admin-password-otp.blade.php` 🆕 · `backend/app/Http/Controllers/Web/Admin/PasswordController.php` 🆕 · `backend/resources/views/admin/password.blade.php` 🆕 · `backend/resources/views/layouts/admin.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/AdminPasswordTest.php` 🆕 · `plan.md` |
 | 2026-09-19 | M37.1 · Mobile website app-like shell | **Mobile website now behaves more like a native app.** At phone widths the desktop navigation becomes a compact top bar with an account action plus a fixed bottom tab bar for Home, Browse, Stays, Farm and Account; content and footer reserve safe-area/tab space. Desktop navigation remains unchanged. | `backend/resources/views/layouts/app.blade.php` · `backend/resources/css/app.css` · `backend/public/css/app.css` · `plan.md` |
 | 2026-09-19 | M36.1 · Clean sharp typography and UI pass | **Applied a cleaner, sharper visual language.** Website and admin surfaces now use Inter Tight, lighter heading/control weights, sharper radii, flatter shadows and crisp borders; Flutter uses Inter Tight with lighter app-bar/button weights and smaller control/card radii. Served CSS published. **253 backend tests / 942 assertions**, Pint clean; Flutter analyze 0 / 19 tests. | `backend/resources/css/{tokens,app,admin-tokens,admin}.css` · `backend/public/css/` · `mobile/lib/core/theme/{tokens,app_theme}.dart` · `plan.md` |

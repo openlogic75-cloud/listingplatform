@@ -26,7 +26,8 @@ class AboutPageTest extends TestCase
         $this->get(route('about'))
             ->assertOk()
             ->assertSee('Built with AI')
-            ->assertSee('opencode')
+            ->assertSee('OpenCode')
+            ->assertSee('GPT')
             ->assertSee('GLM')
             ->assertSee('DeepSeek');
     }
