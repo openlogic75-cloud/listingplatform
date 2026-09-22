@@ -153,7 +153,7 @@ listingplatform/
 | M37 | Mobile website app-like shell (raised 2026-09-19) | ✅ | 1/1 — mobile compact header and fixed bottom navigation |
 | M38 | Admin password change with email OTP (raised 2026-09-19) | ✅ | 1/1 — secure OTP-confirmed admin password change |
 | M39 | About-page AI attribution update (raised 2026-09-19) | ✅ | 1/1 — OpenCode and LLM attribution wording |
-| M40 | Android APK build and live API verification (raised 2026-09-19) | 🔄 | 0/1 — live API verified; APK blocked by missing Android SDK/signing |
+| M40 | Android APK build and live API verification (raised 2026-09-19) | ✅ | 1/1 — 56.7 MB Shekuthi APK built and live public API verified; release keystore remains pending for store publishing |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -812,12 +812,12 @@ listingplatform/
 
 ---
 
-### M40 · Android APK build and live API verification — status: 🔄 (raised 2026-09-19, owner request)
+### M40 · Android APK build and live API verification — status: ✅ (raised 2026-09-19, owner request)
 
-- [ ] **M40.1 · Build release APK and verify the live Shekuthi API surface** — 🔄
+- [x] **M40.1 · Build release APK and verify the live Shekuthi API surface** — ✅
   > **Files:** `mobile/` · `docs/deploy/hostinger.md` · `plan.md`
   > **Comment:** Build the Flutter release APK with the Shekuthi API/site defaults, run analysis/tests, check the Android SDK and signing state, and smoke-test public API endpoints. APK sideload readiness and Play Store signing readiness must be reported separately.
-  > **Notes:** `— 2026-09-19: PARTIAL — live `/`, `/api/v1/locations`, `/api/v1/posts`, `/api/v1/stays` and `/api/v1/reseller-produce` returned HTTP 200; Flutter analyze clean and 19/19 tests passed. APK build is blocked locally because `flutter doctor` reports no Android SDK. Android release signing is also still debug-only in the project.`
+  > **Notes:** `— 2026-09-19: DELIVERED — live `/`, `/api/v1/locations`, `/api/v1/posts`, `/api/v1/stays` and `/api/v1/reseller-produce` returned HTTP 200; Flutter analyze clean and 19/19 tests passed. Built `mobile/build/app/outputs/flutter-apk/app-release.apk` (56.7 MB, SHA-256 `c1b12e1731022633408b7915bdc05d0f945d7dfe71e436b2f2679649debcb7b8`), compile/target SDK 36, application label Shekuthi, API/site compiled to `https://shekuthi.in`. APK is v2-signed with the Android debug certificate; a private release keystore is still required for Play Store publishing.`
 
 ## 7 · Open questions & decisions
 
@@ -852,6 +852,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M40.1 · Android APK build + live API verification | **Built a Shekuthi release APK** against `https://shekuthi.in` after installing a local JDK 17, Android SDK 36, build tools and NDK/CMake. APK: `mobile/build/app/outputs/flutter-apk/app-release.apk`, 56.7 MB, SHA-256 `c1b12e1731022633408b7915bdc05d0f945d7dfe71e436b2f2679649debcb7b8`. Live public API endpoints returned HTTP 200; Flutter analyze clean and 19/19 tests passed. The APK is valid for sideload testing but uses the Android debug certificate; Play Store release signing remains separate. | `plan.md` |
 | 2026-09-19 | M39.1 · About-page AI attribution update | **Expanded the About-page AI disclosure** to name the OpenCode coding agent and GPT, GLM and DeepSeek language models used during development. | `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md` |
 | 2026-09-19 | M38.1 · Admin password change with email OTP | **Added secure admin password changes.** `/admin/password` sends a six-digit OTP to the logged-in admin email; codes are hashed, expire after 10 minutes, allow five attempts and are single-use. New password hashes are stored only with the pending challenge until the OTP is confirmed. Initial `contact@shekuthi.in` admin creation remains a one-time SSH/Tinker operation; configure Hostinger SMTP before using email confirmation. 2 tests / 15 assertions. | `backend/database/migrations/2026_09_19_000004_create_password_change_otps_table.php` 🆕 · `backend/app/Models/PasswordChangeOtp.php` 🆕 · `backend/app/Mail/AdminPasswordOtpMail.php` 🆕 · `backend/resources/views/emails/admin-password-otp.blade.php` 🆕 · `backend/app/Http/Controllers/Web/Admin/PasswordController.php` 🆕 · `backend/resources/views/admin/password.blade.php` 🆕 · `backend/resources/views/layouts/admin.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/AdminPasswordTest.php` 🆕 · `plan.md` |
 | 2026-09-19 | M37.1 · Mobile website app-like shell | **Mobile website now behaves more like a native app.** At phone widths the desktop navigation becomes a compact top bar with an account action plus a fixed bottom tab bar for Home, Browse, Stays, Farm and Account; content and footer reserve safe-area/tab space. Desktop navigation remains unchanged. | `backend/resources/views/layouts/app.blade.php` · `backend/resources/css/app.css` · `backend/public/css/app.css` · `plan.md` |
