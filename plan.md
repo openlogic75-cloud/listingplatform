@@ -154,6 +154,7 @@ listingplatform/
 | M38 | Admin password change with email OTP (raised 2026-09-19) | ✅ | 1/1 — secure OTP-confirmed admin password change |
 | M39 | About-page AI attribution update (raised 2026-09-19) | ✅ | 1/1 — OpenCode and LLM attribution wording |
 | M40 | Android APK build and live API verification (raised 2026-09-19) | ✅ | 1/1 — 56.7 MB Shekuthi APK built and live public API verified; release keystore remains pending for store publishing |
+| M41 | Flutter bottom navigation shell (raised 2026-09-19) | ✅ | 1/1 — persistent Home/Browse/Farm/Account/Back navigation |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -819,6 +820,15 @@ listingplatform/
   > **Comment:** Build the Flutter release APK with the Shekuthi API/site defaults, run analysis/tests, check the Android SDK and signing state, and smoke-test public API endpoints. APK sideload readiness and Play Store signing readiness must be reported separately.
   > **Notes:** `— 2026-09-19: DELIVERED — live `/`, `/api/v1/locations`, `/api/v1/posts`, `/api/v1/stays` and `/api/v1/reseller-produce` returned HTTP 200; Flutter analyze clean and 19/19 tests passed. Built `mobile/build/app/outputs/flutter-apk/app-release.apk` (56.7 MB, SHA-256 `c1b12e1731022633408b7915bdc05d0f945d7dfe71e436b2f2679649debcb7b8`), compile/target SDK 36, application label Shekuthi, API/site compiled to `https://shekuthi.in`. APK is v2-signed with the Android debug certificate; a private release keystore is still required for Play Store publishing.`
 
+---
+
+### M41 · Flutter bottom navigation shell — status: ✅ (raised 2026-09-19, owner request)
+
+- [x] **M41.1 · Add persistent app navigation and Back action** — ✅
+  > **Files:** `mobile/lib/core/navigation/app_shell.dart` 🆕 · `mobile/lib/core/router/app_router.dart` · `mobile/test/` · `plan.md`
+  > **Comment:** Owner wants bottom navigation for Home and Back. Main app routes use a shared Material navigation shell with Home, Browse, Farm, Account and Back destinations; login/register remain focused screens outside the shell.
+  > **Notes:** `— 2026-09-19: DELIVERED — ShellRoute wraps the main app routes with Material NavigationBar; login/register stay outside it. Flutter analyze clean, 19/19 tests passed. Rebuilt APK is 57.0 MB with SHA-256 `536e731773fac72e921a6a44ade00ee7ba5a0519cd36f7adce6ef4a2c8d8e82a` and includes the navigation shell.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -852,6 +862,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M41.1 · Flutter bottom navigation shell | **Added persistent mobile navigation.** Main app routes now use a shared Material bottom bar with Home, Browse, Farm, Account and Back destinations; authentication screens remain focused outside the shell. Rebuilt Shekuthi APK: 57.0 MB, SHA-256 `536e731773fac72e921a6a44ade00ee7ba5a0519cd36f7adce6ef4a2c8d8e82a`. Flutter analyze clean, 19/19 tests. | `mobile/lib/core/navigation/app_shell.dart` 🆕 · `mobile/lib/core/router/app_router.dart` · `plan.md` |
 | 2026-09-19 | M40.1 · Android APK build + live API verification | **Built a Shekuthi release APK** against `https://shekuthi.in` after installing a local JDK 17, Android SDK 36, build tools and NDK/CMake. APK: `mobile/build/app/outputs/flutter-apk/app-release.apk`, 56.7 MB, SHA-256 `c1b12e1731022633408b7915bdc05d0f945d7dfe71e436b2f2679649debcb7b8`. Live public API endpoints returned HTTP 200; Flutter analyze clean and 19/19 tests passed. The APK is valid for sideload testing but uses the Android debug certificate; Play Store release signing remains separate. | `plan.md` |
 | 2026-09-19 | M39.1 · About-page AI attribution update | **Expanded the About-page AI disclosure** to name the OpenCode coding agent and GPT, GLM and DeepSeek language models used during development. | `backend/resources/views/pages/about.blade.php` · `backend/tests/Feature/AboutPageTest.php` · `plan.md` |
 | 2026-09-19 | M38.1 · Admin password change with email OTP | **Added secure admin password changes.** `/admin/password` sends a six-digit OTP to the logged-in admin email; codes are hashed, expire after 10 minutes, allow five attempts and are single-use. New password hashes are stored only with the pending challenge until the OTP is confirmed. Initial `contact@shekuthi.in` admin creation remains a one-time SSH/Tinker operation; configure Hostinger SMTP before using email confirmation. 2 tests / 15 assertions. | `backend/database/migrations/2026_09_19_000004_create_password_change_otps_table.php` 🆕 · `backend/app/Models/PasswordChangeOtp.php` 🆕 · `backend/app/Mail/AdminPasswordOtpMail.php` 🆕 · `backend/resources/views/emails/admin-password-otp.blade.php` 🆕 · `backend/app/Http/Controllers/Web/Admin/PasswordController.php` 🆕 · `backend/resources/views/admin/password.blade.php` 🆕 · `backend/resources/views/layouts/admin.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/AdminPasswordTest.php` 🆕 · `plan.md` |
