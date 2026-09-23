@@ -126,7 +126,23 @@ class AuthController extends AsyncNotifier<SessionState> {
       }
     }
 
-    return 'Something went wrong. Check your connection and try again.';
+    if (error.response == null) {
+      return switch (error.type) {
+        DioExceptionType.connectionError =>
+          'Cannot reach Shekuthi. Check your internet connection or try opening https://shekuthi.in in your phone browser.',
+        DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout =>
+          'Shekuthi took too long to respond. Check your connection and try again.',
+        DioExceptionType.badCertificate =>
+          'The secure connection to Shekuthi could not be verified.',
+        _ => 'The connection to Shekuthi failed. Please try again.',
+      };
+    }
+
+    final int? status = error.response?.statusCode;
+
+    return status == null
+        ? 'Shekuthi returned an unexpected response. Please try again.'
+        : 'Shekuthi returned server error HTTP $status. Please try again later.';
   }
 }
 
