@@ -8,6 +8,16 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
+    'require_email_verification' => filter_var(
+        env('REQUIRE_EMAIL_VERIFICATION', true),
+        FILTER_VALIDATE_BOOLEAN,
+    ),
+
+    'require_listing_approval' => filter_var(
+        env('REQUIRE_LISTING_APPROVAL', true),
+        FILTER_VALIDATE_BOOLEAN,
+    ),
+
     'url' => env('APP_URL', 'http://localhost'),
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),

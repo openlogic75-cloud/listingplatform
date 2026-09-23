@@ -44,9 +44,11 @@ class VendorListingController extends Controller
         $validated = $request->safe()->except(['images']);
         $validated['images'] = $this->storePhotos($request);
 
-        $vendor->products()->create($validated + [
-            'status' => $request->input('status', Product::STATUS_DRAFT),
-        ]);
+        $vendor->products()->create(array_merge($validated, [
+            'status' => config('app.require_listing_approval')
+                ? Product::STATUS_PENDING
+                : $request->input('status', Product::STATUS_DRAFT),
+        ]));
 
         return redirect()
             ->route('dashboard')
@@ -62,10 +64,15 @@ class VendorListingController extends Controller
         $this->authorize('update', $product);
 
         $data = $request->validate([
-            'status' => ['required', 'string', 'in:draft,active,inactive,archived'],
+            'status' => ['required', 'string', 'in:draft,active,inactive,archived,pending'],
         ]);
 
-        $product->update(['status' => $data['status']]);
+        $product->update([
+            'status' => config('app.require_listing_approval')
+                && $data['status'] === Product::STATUS_ACTIVE
+                ? Product::STATUS_PENDING
+                : $data['status'],
+        ]);
 
         return redirect()
             ->route('dashboard')
@@ -106,6 +113,10 @@ class VendorListingController extends Controller
 
         $validated = $request->safe()->except(['images']);
         $validated['images'] = [...$kept, ...$this->storePhotos($request)];
+
+        if (config('app.require_listing_approval')) {
+            $validated['status'] = Product::STATUS_PENDING;
+        }
 
         $product->update($validated);
 

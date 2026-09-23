@@ -35,6 +35,15 @@ class AuthSession {
   final UserProfile profile;
 }
 
+class RegistrationResult {
+  const RegistrationResult.pending(this.message) : session = null;
+
+  const RegistrationResult.authenticated(this.session) : message = null;
+
+  final AuthSession? session;
+  final String? message;
+}
+
 /// Roles that may register. Buyers browse as guests and never register.
 const List<String> kRegisterableRoles = <String>[
   'vendor',
@@ -58,7 +67,7 @@ class AuthRepository {
 
   final ApiClient _api;
 
-  Future<AuthSession> register({
+  Future<RegistrationResult> register({
     required String name,
     required String email,
     String? phone,
@@ -89,11 +98,27 @@ class AuthRepository {
       },
     );
 
-    return AuthSession(
+    final Map<String, dynamic> body = response.data ?? <String, dynamic>{};
+
+    if (response.statusCode == 202 || body['token'] == null) {
+      return RegistrationResult.pending(
+        body['message'] as String? ??
+            'Check your email and click the verification link before signing in.',
+      );
+    }
+
+    return RegistrationResult.authenticated(AuthSession(
       token: response.data?['token'] as String,
       profile: UserProfile.fromJson(
         response.data?['user'] as Map<String, dynamic>,
       ),
+    ));
+  }
+
+  Future<void> resendVerification(String email) async {
+    await _api.dio.post<Map<String, dynamic>>(
+      '/auth/email/verification-notification',
+      data: <String, dynamic>{'email': email},
     );
   }
 

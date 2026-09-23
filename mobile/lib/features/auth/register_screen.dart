@@ -78,6 +78,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           data: (SessionState state) {
             if (state is SessionAuthenticated) {
               context.go('/');
+            } else if (state is SessionRegistrationPending) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(SnackBar(content: Text(state.message)));
+              context.go('/login');
             }
           },
           error: (Object error, StackTrace _) {
@@ -325,5 +330,4 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 }
-
 

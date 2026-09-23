@@ -20,6 +20,13 @@ class RegistrationController extends Controller
     {
         $user = $this->registrations->register($request->all());
 
+        if (config('app.require_email_verification')) {
+            return response()->json([
+                'message' => 'Account created. Check your email and click the verification link before signing in.',
+                'email_verified' => false,
+            ], 202);
+        }
+
         $token = $user->createToken('registration')->plainTextToken;
 
         return response()->json([

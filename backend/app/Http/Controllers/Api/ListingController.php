@@ -7,6 +7,7 @@ use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,9 +39,11 @@ class ListingController extends Controller
         $validated = $request->safe()->except(['images']);
         $validated['images'] = $request->validatedImages();
 
-        $product = $vendor->products()->create($validated + [
-            'status' => $request->input('status', Product::STATUS_DRAFT),
-        ]);
+        $product = $vendor->products()->create(array_merge($validated, [
+            'status' => config('app.require_listing_approval')
+                ? Product::STATUS_PENDING
+                : $request->input('status', Product::STATUS_DRAFT),
+        ]));
 
         return response()->json([
             'data' => new ProductResource($product->load('vendor')),
@@ -53,6 +56,11 @@ class ListingController extends Controller
 
         $validated = $request->safe()->except(['images']);
         $validated['images'] = $request->validatedImages();
+
+        if (config('app.require_listing_approval')
+            && $request->user()->role !== User::ROLE_ADMIN) {
+            $validated['status'] = Product::STATUS_PENDING;
+        }
 
         $product->update($validated);
 

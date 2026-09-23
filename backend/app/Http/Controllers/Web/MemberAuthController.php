@@ -75,6 +75,10 @@ class MemberAuthController extends Controller
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
+        if (config('app.require_email_verification') && ! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+
         return redirect()->intended(route('dashboard'));
     }
 
@@ -89,6 +93,10 @@ class MemberAuthController extends Controller
 
     private function home(User $user): RedirectResponse
     {
+        if (config('app.require_email_verification') && ! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+
         if ($user->role === User::ROLE_ADMIN) {
             return redirect()->route('admin.donation.edit');
         }

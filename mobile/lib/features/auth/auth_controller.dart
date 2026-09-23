@@ -20,6 +20,12 @@ class SessionAuthenticated extends SessionState {
   final UserProfile profile;
 }
 
+class SessionRegistrationPending extends SessionState {
+  const SessionRegistrationPending(this.message);
+
+  final String message;
+}
+
 /// Holds the auth session: register, login, restore on start, logout.
 class AuthController extends AsyncNotifier<SessionState> {
   AuthRepository get _repository => ref.read(authRepositoryProvider);
@@ -79,7 +85,7 @@ class AuthController extends AsyncNotifier<SessionState> {
     state = const AsyncLoading();
 
     try {
-      final AuthSession session = await _repository.register(
+      final RegistrationResult result = await _repository.register(
         name: name,
         email: email,
         phone: phone,
@@ -90,9 +96,14 @@ class AuthController extends AsyncNotifier<SessionState> {
         vendorCategory: vendorCategory,
       );
 
-      await ref.read(tokenStorageProvider).write(session.token);
+      if (result.session == null) {
+        state = AsyncData(SessionRegistrationPending(result.message ?? 'Check your email before signing in.'));
+        return;
+      }
 
-      state = AsyncData(SessionAuthenticated(session.profile));
+      await ref.read(tokenStorageProvider).write(result.session!.token);
+
+      state = AsyncData(SessionAuthenticated(result.session!.profile));
     } on DioException catch (error) {
       state = AsyncError(_message(error), StackTrace.current);
     }

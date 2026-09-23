@@ -40,6 +40,12 @@ class AuthController extends Controller
             ], 403);
         }
 
+        if (config('app.require_email_verification') && ! $user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Verify your email address before signing in.',
+            ], 403);
+        }
+
         // Volunteers need admin approval before they can use the app (M17.1).
         if ($user->role === User::ROLE_VOLUNTEER
             && ! ($user->verificationVolunteer?->isApproved() ?? false)) {

@@ -47,6 +47,9 @@ class Product extends Model
 
     public const STATUS_DRAFT = 'draft';
 
+    /** New vendor listings await admin review before public publication. */
+    public const STATUS_PENDING = 'pending';
+
     public const STATUS_ACTIVE = 'active';
 
     public const STATUS_INACTIVE = 'inactive';

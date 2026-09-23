@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Rate limits are applied per-route (see routes/api.php).
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'verified' => EnsureEmailIsVerified::class,
         ]);
 
         // Security headers on every response (M7.4).

@@ -53,6 +53,8 @@ class MemberRegistrationController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return config('app.require_email_verification')
+            ? redirect()->route('verification.notice')
+            : redirect()->route('dashboard');
     }
 }

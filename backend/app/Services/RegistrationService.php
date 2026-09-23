@@ -101,6 +101,10 @@ class RegistrationService
             'granted_at' => now(),
         ]);
 
+        if (config('app.require_email_verification')) {
+            $user->sendEmailVerificationNotification();
+        }
+
         return $user;
     }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\Admin\AuthController;
 use App\Http\Controllers\Web\Admin\CollectorController as AdminCollectorController;
 use App\Http\Controllers\Web\Admin\DataRequestController;
 use App\Http\Controllers\Web\Admin\DonationSettingsController;
+use App\Http\Controllers\Web\Admin\ListingModerationController;
 use App\Http\Controllers\Web\Admin\LocalityController;
 use App\Http\Controllers\Web\Admin\PasswordController as AdminPasswordController;
 use App\Http\Controllers\Web\Admin\PostController as AdminPostController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DonationController;
 use App\Http\Controllers\Web\DriverBaseController;
 use App\Http\Controllers\Web\DriverProfileController;
+use App\Http\Controllers\Web\EmailVerificationController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\ListingController;
 use App\Http\Controllers\Web\MemberAuthController;
@@ -81,12 +83,23 @@ Route::middleware('guest')->group(function () {
         ->name('login.attempt');
 });
 
+Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])
+        ->name('verification.notice');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+    Route::post('/logout', [MemberAuthController::class, 'logout'])->name('logout');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::post('/dashboard/availability', [DashboardController::class, 'setAvailability'])
         ->name('dashboard.availability');
-    Route::post('/logout', [MemberAuthController::class, 'logout'])->name('logout');
-
     // Vendor listing management on the website (M12.1) — same rules as the API.
     Route::get('/dashboard/listings/new', [VendorListingController::class, 'create'])
         ->name('vendor.listings.create');
@@ -149,6 +162,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/password/confirm', [AdminPasswordController::class, 'confirm'])
             ->middleware('throttle:5,1')
             ->name('password.confirm');
+
+        Route::get('/listings', [ListingModerationController::class, 'index'])->name('listings.index');
+        Route::post('/listings/{product}/approve', [ListingModerationController::class, 'approve'])->name('listings.approve');
+        Route::post('/listings/{product}/reject', [ListingModerationController::class, 'reject'])->name('listings.reject');
 
         // Donation settings (M6.2).
         Route::get('/donation', [DonationSettingsController::class, 'edit'])->name('donation.edit');

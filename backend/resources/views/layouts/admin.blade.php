@@ -27,6 +27,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.listings.index') }}"
+                       @if (request()->routeIs('admin.listings.*')) aria-current="page" @endif>
+                        Listing approval
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.donation.edit') }}"
                        @if (request()->routeIs('admin.donation.*')) aria-current="page" @endif>
                         Donation settings

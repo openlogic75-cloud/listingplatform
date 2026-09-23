@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DonationController;
 use App\Http\Controllers\Api\DriverAvailabilityController;
 use App\Http\Controllers\Api\DriverAvailabilityOverviewController;
 use App\Http\Controllers\Api\DriverBaseController;
+use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\ErrandController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\LocationsController;
@@ -79,9 +80,14 @@ Route::prefix('v1')->group(function () {
         ->middleware('throttle:10,1');
     Route::post('/auth/login', [AuthController::class, 'login'])
         ->middleware('throttle:6,1');
+    Route::post('/auth/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [AuthController::class, 'me']);
+    });
+
+    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
 
         Route::get('/profile', [ProfileController::class, 'show']);

@@ -158,6 +158,7 @@ listingplatform/
 | M42 | Navigation inset fix + causal functional audit (raised 2026-09-19) | 🔄 | 1/2 — safe-area fix and causal audit documented; physical-device verification pending |
 | M43 | Mobile auth network diagnostics (raised 2026-09-19) | ✅ | 1/1 — distinguish API validation, server and connection failures |
 | M44 | Android release network permission (raised 2026-09-19) | ✅ | 1/1 — release APK can access the Shekuthi API |
+| M45 | Email verification + listing approval (raised 2026-09-19) | ✅ | 2/2 — mandatory email verification and admin listing moderation |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -862,6 +863,18 @@ listingplatform/
   > **Comment:** The debug manifest had `INTERNET`, but the release APK manifest did not. Add it to the main manifest so release builds can reach the Shekuthi API.
   > **Notes:** `— 2026-09-19: DELIVERED — main manifest now includes `android.permission.INTERNET`; a fresh 57.0 MB release APK contains the permission, uses the Shekuthi API defaults, and passes Flutter analyze/tests. SHA-256 `72f932f153dca8913ad2e4b0c617903e44e5e0d57bba28e577ce20af0f61bd40`.`
 
+---
+
+### M45 · Email verification + listing approval — status: ✅ (raised 2026-09-19, owner request)
+
+- [x] **M45.1 · Make registration require email-link verification** — ✅
+  > **Files:** `backend/app/Models/User.php` · `backend/app/Services/RegistrationService.php` · `backend/app/Http/Controllers/{Api/RegistrationController,Api/AuthController,Web/MemberAuthController,Web/EmailVerificationController,Api/EmailVerificationController}.php` 🆕 · `backend/resources/views/auth/verify-email.blade.php` 🆕 · `backend/routes/{web,api}.php` · `backend/config/app.php` · `backend/.env.example` · `backend/.env.production.example` · `mobile/lib/features/auth/{auth_repository,auth_controller,register_screen}.dart` · `backend/tests/Feature/{EmailVerificationTest,RegistrationTest}.php` · `plan.md`
+  > **Comment:** Registration sends a signed verification link; unverified users cannot log in or use protected API/member routes. SMTP must be configured for delivery. Existing test runs may disable the production gate through `REQUIRE_EMAIL_VERIFICATION=false` in PHPUnit only.
+- [x] **M45.2 · Require admin approval before a new listing becomes active** — ✅
+  > **Files:** `backend/app/Models/Product.php` · `backend/app/Http/Controllers/{Api/ListingController,Web/VendorListingController,Web/Admin/ListingModerationController}.php` 🆕 · `backend/app/Http/Requests/UpdateListingRequest.php` · `backend/resources/views/{admin/listings/index,dashboard/index,dashboard/listing-form}.blade.php` · `backend/routes/{web,api}.php` · `backend/tests/Feature/{ListingApprovalTest,ListingsTest}.php` · `plan.md`
+  > **Comment:** Vendor-created listings enter `pending`; only admin approval changes them to `active`. Public catalog queries already expose active listings only. Vendor status controls cannot bypass moderation.
+  > **Notes:** `— 2026-09-19: DELIVERED — production registration returns a verification-pending response and sends Laravel's signed email link; unverified users are blocked by web/API middleware. Vendor-created and vendor-edited products enter `pending`; admin `/admin/listings` can approve or reject them. Backend 258 tests / 973 assertions; Flutter analyze clean, 19/19 tests. Rebuilt APK is 57.0 MB with SHA-256 `03b440c17ad43e61fb8a9521fcadb5a906f00782e0fa52319a1fdb494a04b12b`.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -895,6 +908,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M45 · Email verification + listing approval | **Registration now requires email verification before account use.** Signed links are emailed through SMTP, unverified web/API users are blocked, and the app reports the verification-pending state. New and edited vendor listings are `pending` until admin approval at `/admin/listings`; public catalog remains active-only. **258 backend tests / 973 assertions**, Flutter analyze 0 / 19 tests; APK rebuilt with the behavior, 57.0 MB, SHA-256 `03b440c17ad43e61fb8a9521fcadb5a906f00782e0fa52319a1fdb494a04b12b`. | `backend/database/migrations/2026_09_19_000004_create_password_change_otps_table.php` · `backend/app/{Models/User.php,Services/RegistrationService.php,Models/Product.php,Middleware/EnsureEmailIsVerified.php,Http/Controllers/Api/{AuthController,RegistrationController,EmailVerificationController}.php,Http/Controllers/Web/{MemberRegistrationController,MemberAuthController,EmailVerificationController}.php}` · `backend/routes/{web,api}.php` · `backend/resources/views/auth/verify-email.blade.php` · `backend/resources/views/admin/listings/index.blade.php` · `backend/tests/Feature/{EmailVerificationTest,ListingApprovalTest}.php` · `mobile/lib/features/auth/{auth_repository,auth_controller,register_screen}.dart` · `mobile/android/app/src/main/AndroidManifest.xml` · `plan.md` |
 | 2026-09-19 | M44.1 · Android release network permission | **Fixed release APK network access.** The `INTERNET` permission was present only in the debug manifest, so release APKs could not reach Shekuthi despite phone connectivity. Added it to the main manifest and rebuilt the APK; `aapt` confirms the permission. New APK SHA-256: `72f932f153dca8913ad2e4b0c617903e44e5e0d57bba28e577ce20af0f61bd40`. | `mobile/android/app/src/main/AndroidManifest.xml` · `plan.md` |
 | 2026-09-19 | M43.1 · Mobile auth network diagnostics | **Improved registration/login error reporting.** The app now shows validation messages from the API and distinguishes connection, timeout, certificate and HTTP server failures instead of always saying “check your connection”. Rebuilt APK: 57.0 MB, SHA-256 `0c2ef9b8c8d2ab968446c0c97044dcb9a5e1de8baa7b7f2abef7f260233cf21d`. | `mobile/lib/features/auth/auth_controller.dart` · `plan.md` |
 | 2026-09-19 | M42 · Navigation inset fix + causal functional audit | **Fixed bottom navigation overlap risk** by wrapping the Flutter NavigationBar in `SafeArea(top: false)` and documented a causal audit from schema/logic through API/web/app/test evidence. Audit confirms core listing, booking, collection, legal and public-content paths, while keeping M27 DPDP, evidence, verification-story, pickup, parity, production and device gaps explicit. Rebuilt APK includes the fix: 57.0 MB, SHA-256 `cfd48257b4be7f95af78824e82339e5cc3c42c104cf4878e1f50d74f36f3017b`. | `mobile/lib/core/navigation/app_shell.dart` · `docs/launch/functional-audit.md` 🆕 · `plan.md` |
