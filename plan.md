@@ -157,6 +157,7 @@ listingplatform/
 | M41 | Flutter bottom navigation shell (raised 2026-09-19) | ✅ | 1/1 — persistent Home/Browse/Farm/Account/Back navigation |
 | M42 | Navigation inset fix + causal functional audit (raised 2026-09-19) | 🔄 | 1/2 — safe-area fix and causal audit documented; physical-device verification pending |
 | M43 | Mobile auth network diagnostics (raised 2026-09-19) | ✅ | 1/1 — distinguish API validation, server and connection failures |
+| M44 | Android release network permission (raised 2026-09-19) | ✅ | 1/1 — release APK can access the Shekuthi API |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -852,6 +853,15 @@ listingplatform/
   > **Comment:** The app currently turns connection, TLS, server and validation failures into the same “check your connection” text. Preserve field/server errors and show a useful Shekuthi API connectivity message for true network failures.
   > **Notes:** `— 2026-09-19: DELIVERED — auth errors now distinguish API validation/status errors, connection failures, timeouts and certificate failures. Flutter analyze clean, 19/19 tests passed; rebuilt APK is 57.0 MB with SHA-256 `0c2ef9b8c8d2ab968446c0c97044dcb9a5e1de8baa7b7f2abef7f260233cf21d`.`
 
+---
+
+### M44 · Android release network permission — status: ✅ (raised 2026-09-19, owner report)
+
+- [x] **M44.1 · Add INTERNET permission to the main Android manifest** — ✅
+  > **Files:** `mobile/android/app/src/main/AndroidManifest.xml` · `mobile/` · `plan.md`
+  > **Comment:** The debug manifest had `INTERNET`, but the release APK manifest did not. Add it to the main manifest so release builds can reach the Shekuthi API.
+  > **Notes:** `— 2026-09-19: DELIVERED — main manifest now includes `android.permission.INTERNET`; a fresh 57.0 MB release APK contains the permission, uses the Shekuthi API defaults, and passes Flutter analyze/tests. SHA-256 `72f932f153dca8913ad2e4b0c617903e44e5e0d57bba28e577ce20af0f61bd40`.`
+
 ## 7 · Open questions & decisions
 
 > Decided questions keep their row (never delete — history). Record the chosen answer as a dated note here + an ADR in `docs/decisions/`.
@@ -885,6 +895,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-19 | M44.1 · Android release network permission | **Fixed release APK network access.** The `INTERNET` permission was present only in the debug manifest, so release APKs could not reach Shekuthi despite phone connectivity. Added it to the main manifest and rebuilt the APK; `aapt` confirms the permission. New APK SHA-256: `72f932f153dca8913ad2e4b0c617903e44e5e0d57bba28e577ce20af0f61bd40`. | `mobile/android/app/src/main/AndroidManifest.xml` · `plan.md` |
 | 2026-09-19 | M43.1 · Mobile auth network diagnostics | **Improved registration/login error reporting.** The app now shows validation messages from the API and distinguishes connection, timeout, certificate and HTTP server failures instead of always saying “check your connection”. Rebuilt APK: 57.0 MB, SHA-256 `0c2ef9b8c8d2ab968446c0c97044dcb9a5e1de8baa7b7f2abef7f260233cf21d`. | `mobile/lib/features/auth/auth_controller.dart` · `plan.md` |
 | 2026-09-19 | M42 · Navigation inset fix + causal functional audit | **Fixed bottom navigation overlap risk** by wrapping the Flutter NavigationBar in `SafeArea(top: false)` and documented a causal audit from schema/logic through API/web/app/test evidence. Audit confirms core listing, booking, collection, legal and public-content paths, while keeping M27 DPDP, evidence, verification-story, pickup, parity, production and device gaps explicit. Rebuilt APK includes the fix: 57.0 MB, SHA-256 `cfd48257b4be7f95af78824e82339e5cc3c42c104cf4878e1f50d74f36f3017b`. | `mobile/lib/core/navigation/app_shell.dart` · `docs/launch/functional-audit.md` 🆕 · `plan.md` |
 | 2026-09-19 | M41.1 · Flutter bottom navigation shell | **Added persistent mobile navigation.** Main app routes now use a shared Material bottom bar with Home, Browse, Farm, Account and Back destinations; authentication screens remain focused outside the shell. Rebuilt Shekuthi APK: 57.0 MB, SHA-256 `536e731773fac72e921a6a44ade00ee7ba5a0519cd36f7adce6ef4a2c8d8e82a`. Flutter analyze clean, 19/19 tests. | `mobile/lib/core/navigation/app_shell.dart` 🆕 · `mobile/lib/core/router/app_router.dart` · `plan.md` |
