@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
+use App\Models\Consent;
 use App\Models\Media;
 use App\Models\Product;
 use App\Support\UploadValidator;
@@ -41,14 +42,26 @@ class VendorListingController extends Controller
             abort(403);
         }
 
-        $validated = $request->safe()->except(['images']);
+        if (config('app.require_listing_image_consent')
+            && $request->hasFile('photos')
+            && ! $request->boolean('image_public_consent')) {
+            throw ValidationException::withMessages([
+                'image_public_consent' => ['Confirm that listing images may be shown publicly.'],
+            ]);
+        }
+
+        $validated = $request->safe()->except(['images', 'image_public_consent']);
         $validated['images'] = $this->storePhotos($request);
 
-        $vendor->products()->create(array_merge($validated, [
+        $product = $vendor->products()->create(array_merge($validated, [
             'status' => config('app.require_listing_approval')
                 ? Product::STATUS_PENDING
                 : $request->input('status', Product::STATUS_DRAFT),
         ]));
+
+        if ($validated['images'] !== []) {
+            $this->recordPublicImageConsent($product);
+        }
 
         return redirect()
             ->route('dashboard')
@@ -111,14 +124,27 @@ class VendorListingController extends Controller
             ]);
         }
 
-        $validated = $request->safe()->except(['images']);
-        $validated['images'] = [...$kept, ...$this->storePhotos($request)];
+        if (config('app.require_listing_image_consent')
+            && $request->hasFile('photos')
+            && ! $request->boolean('image_public_consent')) {
+            throw ValidationException::withMessages([
+                'image_public_consent' => ['Confirm that listing images may be shown publicly.'],
+            ]);
+        }
+
+        $validated = $request->safe()->except(['images', 'image_public_consent']);
+        $newPhotos = $this->storePhotos($request);
+        $validated['images'] = [...$kept, ...$newPhotos];
 
         if (config('app.require_listing_approval')) {
             $validated['status'] = Product::STATUS_PENDING;
         }
 
         $product->update($validated);
+
+        if ($newPhotos !== []) {
+            $this->recordPublicImageConsent($product);
+        }
 
         return redirect()
             ->route('dashboard')
@@ -155,6 +181,18 @@ class VendorListingController extends Controller
         }
 
         return $paths;
+    }
+
+    private function recordPublicImageConsent(Product $product): void
+    {
+        Consent::query()->create([
+            'subject_type' => Product::class,
+            'subject_id' => $product->id,
+            'consent_key' => Consent::KEY_LISTING_IMAGES_PUBLIC,
+            'text_version' => '1.0',
+            'purpose' => 'The vendor agreed that listing images are publicly viewable with the listing.',
+            'granted_at' => now(),
+        ]);
     }
 
     /**

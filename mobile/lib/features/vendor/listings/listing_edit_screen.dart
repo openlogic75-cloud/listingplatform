@@ -30,6 +30,7 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
   final TextEditingController _availableTo = TextEditingController();
   String _category = 'agro';
   bool _publishNow = false;
+  bool _imagePublicConsent = false;
   bool _saving = false;
   final List<XFile> _photos = <XFile>[];
 
@@ -50,6 +51,15 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_photos.isNotEmpty && !_imagePublicConsent) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(
+          content: Text('Confirm that listing images may be shown publicly.'),
+        ));
       return;
     }
 
@@ -89,8 +99,9 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
               stock: _isRental ? null : int.tryParse(_stock.text.trim()),
               availableFrom: _isRental ? _availableFrom.text.trim() : null,
               availableTo: _isRental ? _availableTo.text.trim() : null,
-              status: _publishNow ? 'active' : 'draft',
-              images: uploaded,
+               status: _publishNow ? 'active' : 'draft',
+               images: uploaded,
+               imagePublicConsent: uploaded.isNotEmpty && _imagePublicConsent,
             );
 
     if (!mounted) {
@@ -134,9 +145,18 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
             SwitchListTile(
               value: _publishNow,
               onChanged: (bool value) => setState(() => _publishNow = value),
-              title: const Text('Publish immediately'),
-              subtitle: const Text('Otherwise it is saved as a draft.'),
+              title: const Text('Submit for publication'),
+              subtitle: const Text('New listings are reviewed by an admin before they go live.'),
             ),
+            if (_photos.isNotEmpty)
+              CheckboxListTile(
+                value: _imagePublicConsent,
+                onChanged: (bool? value) =>
+                    setState(() => _imagePublicConsent = value ?? false),
+                title: const Text('Show listing images publicly'),
+                subtitle: const Text('Anyone viewing the listing can see these images.'),
+                contentPadding: EdgeInsets.zero,
+              ),
             const SizedBox(height: 16),
             _buildSubmitButton(),
             const SizedBox(height: 8),
@@ -391,4 +411,3 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
     );
   }
 }
-

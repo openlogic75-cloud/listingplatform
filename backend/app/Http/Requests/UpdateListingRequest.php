@@ -20,6 +20,11 @@ class UpdateListingRequest extends ListingRequest
 
     public function rules(): array
     {
+        $imageConsentRules = config('app.require_listing_image_consent')
+            && count((array) $this->input('images', [])) > 0
+            ? ['required', 'accepted']
+            : ['nullable'];
+
         return [
             'title' => ['sometimes', 'string', 'max:120'],
             'category' => ['sometimes', 'string', 'in:'.implode(',', Vendor::CATEGORIES)],
@@ -59,6 +64,7 @@ class UpdateListingRequest extends ListingRequest
             ],
             'images' => ['nullable', 'array', 'max:'.Product::MAX_IMAGES],
             'images.*' => ['string', 'max:255'],
+            'image_public_consent' => $imageConsentRules,
             'district_id' => ['nullable', 'integer', 'exists:districts,id'],
             'locality_id' => ['nullable', 'integer', 'exists:localities,id'],
             'status' => ['sometimes', 'string', 'in:draft,active,inactive,archived'],

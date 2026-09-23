@@ -27,6 +27,11 @@ abstract class ListingRequest extends FormRequest
 
     public function rules(): array
     {
+        $imageConsentRules = config('app.require_listing_image_consent')
+            && count((array) $this->input('images', [])) > 0
+            ? ['required', 'accepted']
+            : ['nullable'];
+
         return [
             'title' => ['required', 'string', 'max:120'],
             'category' => ['required', 'string', 'in:'.implode(',', Product::CATEGORIES)],
@@ -66,6 +71,7 @@ abstract class ListingRequest extends FormRequest
             ],
             'images' => ['nullable', 'array', 'max:'.Product::MAX_IMAGES],
             'images.*' => ['string', 'max:255'],
+            'image_public_consent' => $imageConsentRules,
             'district_id' => [
                 'nullable',
                 'integer',

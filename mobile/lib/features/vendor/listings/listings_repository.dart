@@ -54,6 +54,7 @@ class ListingsRepository {
     String? availableTo,
     String status = 'draft',
     List<String> images = const <String>[],
+    bool imagePublicConsent = false,
   }) async {
     final Response<Map<String, dynamic>> response =
         await _api.dio.post<Map<String, dynamic>>(
@@ -72,6 +73,7 @@ class ListingsRepository {
         if (availableTo != null && availableTo.isNotEmpty)
           'available_to': availableTo,
         if (images.isNotEmpty) 'images': images,
+        'image_public_consent': imagePublicConsent,
         'status': status,
       },
     );

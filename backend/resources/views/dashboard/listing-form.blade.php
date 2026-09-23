@@ -146,6 +146,12 @@
                                 JPEG, PNG or WebP, up to 2 MB each, 4 in total. The
                                 server resizes them and converts them to WebP before publishing.
                             </p>
+                            <label class="check-option" style="margin-top: var(--space-2);">
+                                <input type="checkbox" name="image_public_consent" value="1"
+                                       @checked(old('image_public_consent'))>
+                                <span>I agree that these listing images will be publicly visible.</span>
+                            </label>
+                            @error('image_public_consent')<p class="field-error" role="alert">{{ $message }}</p>@enderror
                             @error('photos')<p class="field-error" role="alert">{{ $message }}</p>@enderror
                             @error('photos.*')<p class="field-error" role="alert">{{ $message }}</p>@enderror
                         </section>
@@ -155,10 +161,13 @@
 
                             <div class="field">
                                 <label for="listing-status">Status</label>
-                                <select id="listing-status" name="status">
-                                    <option value="draft" @selected(old('status', $product?->status ?? 'draft') === 'draft')>Draft — hidden from the catalog</option>
-                                    <option value="active" @selected(old('status', $product?->status ?? 'draft') === 'active')>Active — visible in the catalog</option>
-                                    <option value="inactive" @selected(old('status', $product?->status ?? 'draft') === 'inactive')>Inactive — paused</option>
+                                    <select id="listing-status" name="status">
+                                        <option value="draft" @selected(old('status', $product?->status ?? 'draft') === 'draft')>Draft — hidden from the catalog</option>
+                                        @if ($product?->status === 'pending')
+                                            <option value="pending" selected>Pending admin approval</option>
+                                        @endif
+                                        <option value="active" @selected(old('status', $product?->status ?? 'draft') === 'active')>Submit for admin approval</option>
+                                        <option value="inactive" @selected(old('status', $product?->status ?? 'draft') === 'inactive')>Inactive — paused</option>
                                 </select>
                             </div>
 

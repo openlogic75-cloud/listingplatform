@@ -57,6 +57,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
     String? availableTo,
     String status = 'draft',
     List<String> images = const <String>[],
+    bool imagePublicConsent = false,
   }) async {
     try {
       await _repository.create(
@@ -71,6 +72,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         availableTo: availableTo,
         status: status,
         images: images,
+        imagePublicConsent: imagePublicConsent,
       );
 
       await refresh();

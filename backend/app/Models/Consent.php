@@ -12,9 +12,14 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Consent extends Model
 {
     public const KEY_REGISTRATION = 'registration';
+
     public const KEY_BOOKING_CONTACT = 'booking_contact';
+
     public const KEY_ERRAND_CONTACT = 'errand_contact';
+
     public const KEY_NOTIFICATIONS = 'notifications';
+
+    public const KEY_LISTING_IMAGES_PUBLIC = 'listing_images_public';
 
     protected $fillable = [
         'subject_type',

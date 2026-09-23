@@ -86,4 +86,27 @@ class ListingApprovalTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', Product::STATUS_PENDING);
     }
+
+    public function test_listing_images_require_public_visibility_consent(): void
+    {
+        config()->set('app.require_listing_approval', true);
+        config()->set('app.require_listing_image_consent', true);
+        $vendorUser = $this->user(User::ROLE_VENDOR, 'image-consent-vendor@test.com');
+        $vendor = Vendor::query()->create([
+            'user_id' => $vendorUser->id,
+            'display_name' => 'Image Consent Farm',
+            'category' => Vendor::CATEGORY_AGRO,
+        ]);
+
+        $this->actingAs($vendorUser, 'sanctum')
+            ->postJson('/api/v1/listings', [
+                'title' => 'Public image listing',
+                'category' => Product::CATEGORY_AGRO,
+                'price' => 40,
+                'moq' => 2,
+                'images' => ['products/not-uploaded.webp'],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('image_public_consent');
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\Consent;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Vendor;
@@ -36,7 +37,7 @@ class ListingController extends Controller
         $this->authorize('create', Product::class);
 
         $vendor = $this->requireVendor($request);
-        $validated = $request->safe()->except(['images']);
+        $validated = $request->safe()->except(['images', 'image_public_consent']);
         $validated['images'] = $request->validatedImages();
 
         $product = $vendor->products()->create(array_merge($validated, [
@@ -44,6 +45,17 @@ class ListingController extends Controller
                 ? Product::STATUS_PENDING
                 : $request->input('status', Product::STATUS_DRAFT),
         ]));
+
+        if ($product->images !== []) {
+            Consent::query()->create([
+                'subject_type' => Product::class,
+                'subject_id' => $product->id,
+                'consent_key' => Consent::KEY_LISTING_IMAGES_PUBLIC,
+                'text_version' => '1.0',
+                'purpose' => 'The vendor agreed that listing images are publicly viewable with the listing.',
+                'granted_at' => now(),
+            ]);
+        }
 
         return response()->json([
             'data' => new ProductResource($product->load('vendor')),
@@ -54,7 +66,7 @@ class ListingController extends Controller
     {
         $this->authorize('update', $product);
 
-        $validated = $request->safe()->except(['images']);
+        $validated = $request->safe()->except(['images', 'image_public_consent']);
         $validated['images'] = $request->validatedImages();
 
         if (config('app.require_listing_approval')
@@ -63,6 +75,17 @@ class ListingController extends Controller
         }
 
         $product->update($validated);
+
+        if ($product->images !== [] && $request->boolean('image_public_consent')) {
+            Consent::query()->create([
+                'subject_type' => Product::class,
+                'subject_id' => $product->id,
+                'consent_key' => Consent::KEY_LISTING_IMAGES_PUBLIC,
+                'text_version' => '1.0',
+                'purpose' => 'The vendor agreed that listing images are publicly viewable with the listing.',
+                'granted_at' => now(),
+            ]);
+        }
 
         return response()->json([
             'data' => new ProductResource($product->fresh('vendor')),

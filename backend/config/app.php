@@ -18,6 +18,11 @@ return [
         FILTER_VALIDATE_BOOLEAN,
     ),
 
+    'require_listing_image_consent' => filter_var(
+        env('REQUIRE_LISTING_IMAGE_CONSENT', true),
+        FILTER_VALIDATE_BOOLEAN,
+    ),
+
     'url' => env('APP_URL', 'http://localhost'),
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),

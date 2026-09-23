@@ -20,6 +20,7 @@
         <env name="APP_ENV" value="testing"/>
         <env name="REQUIRE_EMAIL_VERIFICATION" value="false"/>
         <env name="REQUIRE_LISTING_APPROVAL" value="false"/>
+        <env name="REQUIRE_LISTING_IMAGE_CONSENT" value="false"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
         <env name="PII_INDEX_KEY" value="test-pii-index-key"/>

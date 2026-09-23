@@ -29,6 +29,7 @@ class ConsentController extends Controller
                 Consent::KEY_BOOKING_CONTACT,
                 Consent::KEY_ERRAND_CONTACT,
                 Consent::KEY_NOTIFICATIONS,
+                Consent::KEY_LISTING_IMAGES_PUBLIC,
             ])],
             'text_version' => ['required', 'string', 'max:20'],
             'purpose' => ['required', 'string', 'max:255'],
