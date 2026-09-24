@@ -37,11 +37,12 @@ class RetentionSweep extends Command
 {
     protected $signature = 'retention:sweep
         {--dry-run : Report what would change without writing anything}
-        {--sweeps= : Comma-separated subset of stale-bookings,media,consents,deletion-requests}
+        {--sweeps= : Comma-separated subset of stale-bookings,media,consents,exports,deletion-requests}
         {--stale-days=30 : Cancel pending bookings older than this many days}
         {--media-days=90 : Delete unreferenced media older than this many days}
         {--consent-days=730 : Revoke unrevoked consents older than this many days}
-        {--request-days=7 : Warn on DPDP requests stuck longer than this many days}';
+        {--request-days=7 : Warn on DPDP requests stuck longer than this many days}
+        {--export-days=1 : Delete private data export files older than this many days}';
 
     protected $description = 'Run retention sweeps (stale bookings, orphaned media, expired consents, DPDP follow-ups).';
 
@@ -62,6 +63,10 @@ class RetentionSweep extends Command
 
         if (in_array('consents', $sweeps, true)) {
             $counts['expired_consents'] = $this->sweepExpiredConsents($dryRun);
+        }
+
+        if (in_array('exports', $sweeps, true)) {
+            $counts['expired_exports'] = $this->sweepExpiredExports($dryRun);
         }
 
         if (in_array('deletion-requests', $sweeps, true)) {
@@ -87,10 +92,10 @@ class RetentionSweep extends Command
         $raw = (string) $this->option('sweeps');
 
         if ($raw === '') {
-            return ['stale-bookings', 'media', 'consents', 'deletion-requests'];
+            return ['stale-bookings', 'media', 'consents', 'exports', 'deletion-requests'];
         }
 
-        $allowed = ['stale-bookings', 'media', 'consents', 'deletion-requests'];
+        $allowed = ['stale-bookings', 'media', 'consents', 'exports', 'deletion-requests'];
         $chosen = array_map('trim', explode(',', $raw));
 
         return array_values(array_intersect($allowed, $chosen));
@@ -200,6 +205,56 @@ class RetentionSweep extends Command
         }
 
         return $ids->count();
+    }
+
+    /**
+     * Remove private personal-data export artifacts after their download
+     * window. Keep the DataRequest row for the audit trail, but clear its path.
+     */
+    private function sweepExpiredExports(bool $dryRun): int
+    {
+        $cutoff = now()->subDays((int) $this->option('export-days'));
+        $requests = DataRequest::query()
+            ->where('type', DataRequest::TYPE_EXPORT)
+            ->where('status', DataRequest::STATUS_COMPLETED)
+            ->whereNotNull('notes')
+            ->get();
+
+        $requests = $requests->filter(function (DataRequest $request) use ($cutoff): bool {
+            $isLegacyPublicPath = str_starts_with((string) $request->notes, 'exports/');
+            $isExpiredPrivatePath = str_starts_with((string) $request->notes, 'private:exports/')
+                && $request->requested_at?->lt($cutoff);
+
+            return $isLegacyPublicPath || $isExpiredPrivatePath;
+        });
+
+        if ($dryRun) {
+            return $requests->count();
+        }
+
+        $requests->each(function (DataRequest $request): void {
+            if (str_starts_with((string) $request->notes, 'exports/')) {
+                // Older application versions placed decrypted exports on the
+                // public disk. Remove those files immediately as a security
+                // cleanup, regardless of age.
+                Storage::disk('public')->delete($request->notes);
+            } elseif (str_starts_with((string) $request->notes, 'private:exports/')) {
+                $path = substr($request->notes, strlen('private:'));
+                Storage::disk('local')->delete($path);
+            }
+
+            if (str_starts_with((string) $request->notes, 'exports/')) {
+                $request->update(['notes' => 'Legacy public export file removed as security cleanup.']);
+            } else {
+                $request->update(['notes' => 'Private export file expired and was removed.']);
+            }
+        });
+
+        if ($requests->isNotEmpty()) {
+            Log::info('retention:sweep expired exports', ['count' => $requests->count()]);
+        }
+
+        return $requests->count();
     }
 
     /**

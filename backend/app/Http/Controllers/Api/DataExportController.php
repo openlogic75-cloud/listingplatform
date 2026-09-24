@@ -7,7 +7,7 @@ use App\Models\DataRequest;
 use App\Services\DataExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Self-serve data export (M7.2). Creates a data request record and generates
@@ -15,9 +15,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class DataExportController extends Controller
 {
-    public function __construct(private DataExportService $exportService)
-    {
-    }
+    public function __construct(private DataExportService $exportService) {}
 
     /**
      * Request a data export.
@@ -43,14 +41,18 @@ class DataExportController extends Controller
         $dataRequest->update([
             'status' => DataRequest::STATUS_COMPLETED,
             'processed_at' => now(),
-            'notes' => $path,
+            'notes' => 'private:'.$path,
         ]);
 
         return response()->json([
             'data' => [
                 'request_id' => $dataRequest->id,
                 'status' => DataRequest::STATUS_COMPLETED,
-                'download_url' => Storage::disk('public')->url($path),
+                'download_url' => URL::temporarySignedRoute(
+                    'api.exports.download',
+                    now()->addMinutes(10),
+                    ['dataRequest' => $dataRequest->id],
+                ),
             ],
         ], 201);
     }

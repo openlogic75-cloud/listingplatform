@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CollectorController;
 use App\Http\Controllers\Api\ConsentController;
 use App\Http\Controllers\Api\DataDeletionController;
 use App\Http\Controllers\Api\DataExportController;
+use App\Http\Controllers\Api\DataExportDownloadController;
 use App\Http\Controllers\Api\DeviceTokenController;
 use App\Http\Controllers\Api\DonationController;
 use App\Http\Controllers\Api\DriverAvailabilityController;
@@ -82,6 +83,9 @@ Route::prefix('v1')->group(function () {
         ->middleware('throttle:6,1');
     Route::post('/auth/email/verification-notification', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:6,1');
+    Route::get('/exports/{dataRequest}/download', DataExportDownloadController::class)
+        ->middleware(['signed', 'throttle:10,1'])
+        ->name('api.exports.download');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [AuthController::class, 'me']);

@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Consent;
-use App\Models\DataRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Self-serve data export (M7.2). Machine-readable export of all personal data
@@ -25,8 +25,8 @@ class DataExportService
             'exported_at' => now()->toIso8601String(),
         ];
 
-        $filename = 'exports/user-'.$user->id.'-'.now()->timestamp.'.json';
-        Storage::disk('public')->put($filename, json_encode($data, JSON_PRETTY_PRINT));
+        $filename = 'exports/'.Str::uuid().'.json';
+        Storage::disk('local')->put($filename, json_encode($data, JSON_PRETTY_PRINT));
 
         return $filename;
     }

@@ -7,6 +7,7 @@ use App\Models\DataRequest;
 use App\Models\User;
 use App\Support\BlindIndex;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class DpdpTest extends TestCase
@@ -87,13 +88,38 @@ class DpdpTest extends TestCase
     public function test_a_user_can_export_their_data(): void
     {
         $user = $this->makeUser('export@test.com');
+        Storage::fake('local');
+        Storage::fake('public');
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/v1/export');
 
         $response->assertCreated()
             ->assertJsonPath('data.status', DataRequest::STATUS_COMPLETED)
-            ->assertJsonPath('data.download_url', fn ($v) => $v !== null);
+            ->assertJsonPath('data.download_url', fn ($v) => is_string($v) && str_contains($v, 'signature='));
+
+        $dataRequest = DataRequest::query()->where('user_id', $user->id)->firstOrFail();
+        $this->assertStringStartsWith('private:exports/', $dataRequest->notes);
+        $privatePath = substr($dataRequest->notes, strlen('private:'));
+        Storage::disk('local')->assertExists($privatePath);
+        $this->assertSame([], Storage::disk('public')->allFiles('exports'));
+
+        $downloadUrl = (string) $response->json('data.download_url');
+        $parts = parse_url($downloadUrl);
+        $signedPath = $parts['path'].'?'.$parts['query'];
+
+        $this->get($signedPath)
+            ->assertOk()
+            ->assertHeader('cache-control', 'max-age=0, no-store, private')
+            ->assertDownload('shekuthi-data-export-'.$dataRequest->id.'.json');
+
+        $this->assertStringContainsString(
+            'export@test.com',
+            Storage::disk('local')->get($privatePath),
+        );
+
+        $this->get('/api/v1/exports/'.$dataRequest->id.'/download')
+            ->assertForbidden();
 
         $this->assertDatabaseHas('data_requests', [
             'user_id' => $user->id,

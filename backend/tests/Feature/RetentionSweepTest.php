@@ -202,4 +202,66 @@ class RetentionSweepTest extends TestCase
             'status' => DataRequest::STATUS_PROCESSING,
         ]);
     }
+
+    public function test_expired_private_exports_are_deleted_but_request_audit_is_kept(): void
+    {
+        Storage::fake('local');
+        $email = 'export-retention@test.com';
+        $user = User::query()->create([
+            'name' => 'Export User',
+            'email' => $email,
+            'email_index' => BlindIndex::make($email),
+            'password' => bcrypt('Password123!'),
+            'role' => User::ROLE_SKILLED_WORKER,
+            'is_active' => true,
+        ]);
+        $exportPath = 'exports/test-expired.json';
+        Storage::disk('local')->put($exportPath, '{"private":"data"}');
+
+        $request = DataRequest::query()->create([
+            'user_id' => $user->id,
+            'type' => DataRequest::TYPE_EXPORT,
+            'status' => DataRequest::STATUS_COMPLETED,
+            'requested_at' => now()->subDays(2),
+            'processed_at' => now()->subDays(2),
+            'notes' => 'private:'.$exportPath,
+        ]);
+
+        Artisan::call('retention:sweep', [
+            '--sweeps' => 'exports',
+            '--export-days' => 1,
+        ]);
+
+        Storage::disk('local')->assertMissing($exportPath);
+        $this->assertSame('Private export file expired and was removed.', $request->fresh()->notes);
+        $this->assertSame(DataRequest::STATUS_COMPLETED, $request->fresh()->status);
+    }
+
+    public function test_retention_removes_legacy_public_export_files(): void
+    {
+        Storage::fake('public');
+        $user = User::query()->create([
+            'name' => 'Legacy Export User',
+            'email' => 'legacy-export@test.com',
+            'email_index' => BlindIndex::make('legacy-export@test.com'),
+            'password' => bcrypt('Password123!'),
+            'role' => User::ROLE_SKILLED_WORKER,
+            'is_active' => true,
+        ]);
+        $path = 'exports/user-'.$user->id.'-'.now()->timestamp.'.json';
+        Storage::disk('public')->put($path, '{"private":"legacy data"}');
+        $request = DataRequest::query()->create([
+            'user_id' => $user->id,
+            'type' => DataRequest::TYPE_EXPORT,
+            'status' => DataRequest::STATUS_COMPLETED,
+            'requested_at' => now(),
+            'processed_at' => now(),
+            'notes' => $path,
+        ]);
+
+        Artisan::call('retention:sweep', ['--sweeps' => 'exports']);
+
+        Storage::disk('public')->assertMissing($path);
+        $this->assertStringContainsString('Legacy public export', $request->fresh()->notes);
+    }
 }
