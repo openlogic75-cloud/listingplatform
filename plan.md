@@ -126,8 +126,8 @@ listingplatform/
 | M10 | Scope corrections & role rename (raised 2026-09-18) | ✅ | 3/3 complete — multi-locality add, service-area scope, skilled-worker rename |
 | M11 | Upload optimisation (raised 2026-09-18) | ✅ | 1/1 complete — WebP conversion on media uploads |
 | M12 | Vendor functional gaps (raised 2026-09-18) | ✅ | 4/4 — web listing create/edit, archive, profile, bookings |
-| M13 | App parity gaps (raised 2026-09-18) | ⬜ | 0/3 — listing edit, skilled-worker profile, pickup requests |
-| M14 | Admin & platform gaps (raised 2026-09-18) | ⬜ | 0/2 — listing moderation, web notifications |
+| M13 | App parity gaps (raised 2026-09-18) | 🔄 | 1/3 — skilled-worker profile shipped; listing edit and ordinary pickup requests remain |
+| M14 | Admin & platform gaps (raised 2026-09-18) | 🔄 | 1/2 — listing moderation shipped; web notifications inbox remains |
 | M15 | Member workspace & form UI (raised 2026-09-18) | ✅ | 5/5 complete — dashboard/listing form, booking form, asset publishing, driver base, worker profile |
 | M16 | Dev tooling (raised 2026-09-18) | ✅ | 1/1 — demo accounts seeder (one account per role) |
 | M17 | Volunteer approval & skilled-worker discovery (raised 2026-09-18) | ✅ | 3/3 — volunteer approval, skill categories, worker directory |
@@ -140,7 +140,7 @@ listingplatform/
 | M24 | About page & content (raised 2026-09-19) | ✅ | 1/1 — stakeholders + full feature list |
 | M25 | Verification questionnaire + signed story (raised 2026-09-19) | 🔄 | 2/3 — backend/web + app questionnaire/stories ✅; volunteer photo upload pending |
 | M26 | Legal pages & DPDP compliance (raised 2026-09-19) | ✅ | 3/3 — legal pages, consent capture, app links/docs |
-| M27 | Production audit (raised 2026-09-19) | 🔄 | 0/8 — collector role, pickup client, evidence upload, export/consent/deletion, story link, catalog filters + launch blockers |
+| M27 | Production audit (raised 2026-09-19) | 🔄 | 1/8 closed — collector dead-end resolved; collection flow partially addresses pickup; DPDP, evidence, story link, ordinary pickup UI, web filters and launch checks remain |
 | M28 | Collectors & reseller farm produce (raised 2026-09-19) | ✅ | 5/5 — collector role + signing, reseller category/section, collection jobs, app collector screens, vendor request (web + app) |
 | M29 | Open-source distribution (raised 2026-09-19) | ✅ | 2/2 — MIT license + repo; About page source/contribution note and AI-built disclosure |
 | M30 | Media limits & optimisation (raised 2026-09-19) | ✅ | 1/1 — 2 MB upload cap, downscale to 1600 px + WebP, max 4 photos per listing |
@@ -155,10 +155,11 @@ listingplatform/
 | M39 | About-page AI attribution update (raised 2026-09-19) | ✅ | 1/1 — OpenCode and LLM attribution wording |
 | M40 | Android APK build and live API verification (raised 2026-09-19) | ✅ | 1/1 — 56.7 MB Shekuthi APK built and live public API verified; release keystore remains pending for store publishing |
 | M41 | Flutter bottom navigation shell (raised 2026-09-19) | ✅ | 1/1 — persistent Home/Browse/Farm/Account/Back navigation |
-| M42 | Navigation inset fix + causal functional audit (raised 2026-09-19) | 🔄 | 1/2 — safe-area fix and causal audit documented; physical-device verification pending |
+| M42 | Navigation inset fix + causal functional audit (raised 2026-09-19) | ✅ | 2/2 — safe-area implementation and causal audit documented; physical-device walkthrough remains external |
 | M43 | Mobile auth network diagnostics (raised 2026-09-19) | ✅ | 1/1 — distinguish API validation, server and connection failures |
 | M44 | Android release network permission (raised 2026-09-19) | ✅ | 1/1 — release APK can access the Shekuthi API |
 | M45 | Email verification + listing approval (raised 2026-09-19) | ✅ | 2/2 — mandatory email verification and admin listing moderation |
+| M46 | Current function inventory and plan reconciliation (raised 2026-09-24) | ✅ | 1/1 — current function map, verification evidence and open gaps appended |
 
 > Dates/durations are deliberately not tracked — status and dependencies are. Update Progress as sub-tasks close.
 
@@ -440,23 +441,25 @@ listingplatform/
   > **Comment:** List the vendor's bookings and advance status through the same `BookingService` transitions the API uses (one lifecycle, never forked). Guest contact visible to the owning vendor only.
   > **Notes:** `— 2026-09-18: DELIVERED — `/dashboard/bookings` premium page (code, guest name + tel link, items with quantity/price snapshot, notes, and only the allowed next-step buttons derived from `BookingService::TRANSITIONS`); ownership via `BookingPolicy::transition`. Vendor dashboard gained a Bookings stat + header link. Also fixed a shared gap: `layouts/app.blade.php` never rendered `session('status')`, so every earlier "saved" flash was invisible — added a flash alert + `.alert.success`. 6 new tests. Backend 173 tests green; Pint clean; assets published; live 200 verified.`
 
-### M13 · App parity gaps — status: ⬜ (raised from the same audit)
+### M13 · App parity gaps — status: 🔄 (raised from the same audit)
 
 - [ ] **M13.1 · App listing edit screen** — ⬜
   > **Files:** `mobile/lib/features/vendor/listings/listing_edit_screen.dart` · `mobile/lib/features/vendor/listings/listings_screen.dart` · `mobile/lib/core/router/app_router.dart` · `mobile/test/listings_repository_test.dart`
   > **Comment:** `updateListing()` and `ListingsRepository.update()` already exist but no screen/route uses them — wire an `/listings/:id/edit` route, prefill the form, and make each row in My listings tappable to edit.
-- [ ] **M13.2 · App skilled-worker profile** — ⬜
+- [x] **M13.2 · App skilled-worker profile** — ✅
   > **Files:** `mobile/lib/features/worker/profile/` 🆕 · `mobile/lib/core/router/app_router.dart` · `mobile/lib/features/home/home_screen.dart` · `backend/app/Http/Controllers/Api/ProfileController.php`
-  > **Comment:** No skilled-worker UI exists anywhere. Add a profile screen (services offered) against `GET/PUT /profile`, with a home-screen entry. Service areas stay free text (not tied to district/locality, per M10.2).
+  > **Comment:** Skilled-worker UI for profile/service updates against `GET/PUT /profile`, with a home-screen entry. Service areas stay free text (not tied to district/locality, per M10.2).
+  > **Notes:** `— 2026-09-19: VERIFIED COMPLETE — app profile screen/repository route are present and Flutter analysis/tests pass.`
 - [ ] **M13.3 · App vendor pickup/delivery job request** — ⬜
   > **Files:** `mobile/lib/features/vendor/logistics/` 🆕 · `mobile/lib/core/router/app_router.dart` · `mobile/lib/features/vendor/bookings/`
   > **Comment:** M4.4 (`POST /logistics/jobs`) has no client UI — vendors cannot ask for a pickup from the app. Add a request screen from a booking (type + locality + address) and show the job status.
 
-### M14 · Admin & platform gaps — status: ⬜ (raised from the same audit)
+### M14 · Admin & platform gaps — status: 🔄 (raised from the same audit)
 
-- [ ] **M14.1 · Admin listing moderation screen** — ⬜
-  > **Files:** `backend/app/Http/Controllers/Web/Admin/ListingController.php` 🆕 · `backend/resources/views/admin/listings/index.blade.php` 🆕 · `backend/resources/views/layouts/admin.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/AdminListingModerationTest.php` 🆕
-  > **Comment:** `ProductPolicy` lets admins act, but there is no dashboard screen — moderation is API-only. Add a searchable listing table with archive/unpublish actions.
+- [x] **M14.1 · Admin listing moderation screen** — ✅ (delivered with M45.2)
+  > **Files:** `backend/app/Http/Controllers/Web/Admin/ListingModerationController.php` 🆕 · `backend/resources/views/admin/listings/index.blade.php` 🆕 · `backend/resources/views/layouts/admin.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/ListingApprovalTest.php` 🆕
+  > **Comment:** Admin moderation queue for new vendor listings, with approve/reject actions. New listings stay pending until approved.
+  > **Notes:** `— 2026-09-19: DELIVERED — implemented in M45.2 as `ListingModerationController`, `/admin/listings`, approve/reject routes and `ListingApprovalTest`; controller path is `Web/Admin/ListingModerationController.php` (not the originally proposed generic ListingController).`
 - [ ] **M14.2 · Web notifications inbox** — ⬜
   > **Files:** `backend/app/Http/Controllers/Web/NotificationController.php` 🆕 · `backend/resources/views/dashboard/notifications.blade.php` 🆕 · `backend/resources/views/layouts/app.blade.php` · `backend/routes/web.php` · `backend/tests/Feature/WebNotificationTest.php` 🆕
   > **Comment:** The in-app inbox (M8.1) has no website equivalent; surface the same `notifications` rows for signed-in members.
@@ -656,6 +659,7 @@ listingplatform/
   > **Files:** `backend/app/Http/Controllers/Api/{DriverBaseController,DriverAvailabilityController,LogisticsController}.php` · `backend/app/Services/JobMatchingService.php` · `backend/app/Models/LogisticsJob.php` · `mobile/lib/features/driver/`
   > **Comment:** collectors can register (M1.4 writes a `driver_availability` row) but `DriverBaseController`/`DriverAvailabilityController` reject any role that is not `driver`, `JobMatchingService` only ever matches `ROLE_DRIVER`, `logistics_jobs.collector_id` is never assigned, and no client has a collector screen. A collector account is a dead end. Decide: implement the pickup(collector)→delivery(driver) legs, or stop offering collector at registration.
   > **Notes:** `— 2026-09-19: RESOLVED (decision) — the owner chose a collection-specific collector, not a driver leg: collectors are signed to a sub-division and move farm produce to a hub. M28.1 gives them a real role + sign-in gate, M28.3 assigns `logistics_jobs.collector_id`, M28.4 gives them a screen. Collectors stay out of the driver base/availability flow by design.`
+  > **Status note:** counted as closed by the current causal audit; M28 code and tests exercise assignment, sign-in gate, job matching and collector actions.
 - [ ] **M27.2 · Vendor pickup/delivery request has no client** — 🆕
   > **Files:** `backend/app/Http/Controllers/Web/…` · `mobile/lib/features/vendor/`
   > **Comment:** `POST /logistics/jobs` exists (M4.4) but no web or app screen calls it, so "a farmer can connect to logistics to pick up items" (local-market.md) is unreachable. The app side is M13.3; the website side is missing. Add a request form on a booking.
@@ -679,7 +683,7 @@ listingplatform/
   > **Files:** `backend/app/Http/Controllers/Web/CatalogController.php` · `backend/resources/views/pages/catalog.blade.php`
   > **Comment:** `/stays` has area + price filters; the general catalog still only searches `q`/`category` although the API supports district/locality/price. Minor parity gap.
 
-> **Already tracked, not duplicated here:** M13.1 app listing edit · M13.3 app vendor pickup UI · M14.1 admin listing moderation · M14.2 web notifications inbox · M21.3 app commission UI + errand referral capture · M25.3 app volunteer photo upload.
+> **Already tracked, not duplicated here:** M13.1 app listing edit · M13.3 app vendor pickup UI · M14.2 web notifications inbox · M21.3 app commission UI + errand referral capture · M25.3 app volunteer photo upload. M14.1 admin listing moderation is delivered in M45.2.
 > **Launch blockers (external/owner):** Q7 host confirmation + deploy not run (M8.4) · Q13 brand (M0.7) · `FCM_SERVER_KEY` unset (push inbox-only) · app release signing requires an Android SDK machine (M20.3) · legal identity env values unset (`LEGAL_*`) · no git remote (repo is a single point of failure).
 
 ### M28 · Collectors & reseller farm produce — status: ✅ (raised 2026-09-19, owner request)
@@ -873,7 +877,16 @@ listingplatform/
 - [x] **M45.2 · Require admin approval before a new listing becomes active** — ✅
   > **Files:** `backend/app/Models/Product.php` · `backend/app/Http/Controllers/{Api/ListingController,Web/VendorListingController,Web/Admin/ListingModerationController}.php` 🆕 · `backend/app/Http/Requests/UpdateListingRequest.php` · `backend/resources/views/{admin/listings/index,dashboard/index,dashboard/listing-form}.blade.php` · `backend/routes/{web,api}.php` · `backend/tests/Feature/{ListingApprovalTest,ListingsTest}.php` · `plan.md`
   > **Comment:** Vendor-created listings enter `pending`; only admin approval changes them to `active`. Public catalog queries already expose active listings only. Vendor status controls cannot bypass moderation.
-  > **Notes:** `— 2026-09-19: DELIVERED — production registration returns a verification-pending response and sends Laravel's signed email link; unverified users are blocked by web/API middleware. Vendor-created and vendor-edited products enter `pending`; admin `/admin/listings` can approve or reject them. Listing image uploads require explicit public-visibility consent in production. Backend 259 tests / 976 assertions; Flutter analyze clean, 19/19 tests. Rebuilt APK is 57.0 MB with SHA-256 `af1c5dc61270da1222db00df9da66570d69ca86475c7f5b6e47ebccad43295db`.`
+  > **Notes:** `— 2026-09-19: DELIVERED — production registration returns a verification-pending response and sends Laravel's signed email link; unverified users are blocked by web/API middleware. Vendor-created and vendor-edited products enter `pending`; admin `/admin/listings` can approve or reject them. Listing image uploads require explicit public-visibility consent. Backend 259 tests / 976 assertions; Flutter analyze clean, 19/19 tests. Release build at that point was debug-signed; later M44 fixed INTERNET permission.`
+
+---
+
+### M46 · Current function inventory and plan reconciliation — status: ✅ (raised 2026-09-24, owner request)
+
+- [x] **M46.1 · Append current function inventory, evidence and open gaps** — ✅
+  > **Files:** `plan.md` · `docs/launch/functional-audit.md`
+  > **Comment:** Reconcile completed/pending milestone summaries with current code, map every major product function across DB/logic/API/web/app/tests, and record current automated/live evidence plus unresolved security, parity and production work.
+  > **Notes:** `— 2026-09-24: DELIVERED — §10–11 index public pages, auth/email verification, vendor/listing moderation and image consent, booking, logistics, worker/volunteer, donations/referrals, DPDP, admin and app functions with key paths, automated/live evidence and open gaps; detailed causal audit in docs/launch/functional-audit.md. Backend 259 tests / 976 assertions; Flutter analyze clean, 19/19 tests; listed public routes/API feeds HTTP 200. Audit found a critical risk: decrypted account exports are written to public storage with guessable filenames; isolate export files and require authenticated/expiring downloads before public launch.`
 
 ## 7 · Open questions & decisions
 
@@ -908,6 +921,7 @@ listingplatform/
 
 | Date | Task ID | Change | Files touched |
 |------|---------|--------|---------------|
+| 2026-09-24 | M46.1 · Current function inventory and plan reconciliation | **Audited the plan against implementation and evidence.** Appended §11 function lookup and updated `docs/launch/functional-audit.md` for M45 email verification, listing approval and image consent; recorded 259 backend tests / 976 assertions, Flutter analyzer + 19 tests, and live public endpoint checks. Reconciled app worker profile/admin moderation as complete. Flagged a **critical export exposure risk**: decrypted data export is stored on public disk with guessable filenames; protect it before public launch. DPDP deletion/consent, evidence capture, story link, ordinary pickup, listing deletion and other parity/operations gaps remain explicit. | `plan.md` · `docs/launch/functional-audit.md` |
 | 2026-09-19 | M45 · Email verification + listing approval | **Registration now requires email verification before account use.** Signed links are emailed through SMTP, unverified web/API users are blocked, and the app reports the verification-pending state. New and edited vendor listings are `pending` until admin approval at `/admin/listings`; public catalog remains active-only; listing image upload requires explicit public-visibility consent in production. **259 backend tests / 976 assertions**, Flutter analyze 0 / 19 tests; APK rebuilt with the behavior, 57.0 MB, SHA-256 `af1c5dc61270da1222db00df9da66570d69ca86475c7f5b6e47ebccad43295db`. | `backend/database/migrations/2026_09_19_000004_create_password_change_otps_table.php` · `backend/app/{Models/User.php,Models/Consent.php,Services/RegistrationService.php,Models/Product.php,Middleware/EnsureEmailIsVerified.php,Http/Controllers/Api/{AuthController,RegistrationController,EmailVerificationController,ListingController,ConsentController}.php,Http/Controllers/Web/{MemberRegistrationController,MemberAuthController,EmailVerificationController,VendorListingController,Admin/ListingModerationController}.php}` · `backend/routes/{web,api}.php` · `backend/resources/views/{auth/verify-email.blade.php,admin/listings/index.blade.php,dashboard/listing-form.blade.php}` · `backend/tests/Feature/{EmailVerificationTest,ListingApprovalTest}.php` · `mobile/lib/features/auth/{auth_repository,auth_controller,register_screen}.dart` · `mobile/android/app/src/main/AndroidManifest.xml` · `plan.md` |
 | 2026-09-19 | M44.1 · Android release network permission | **Fixed release APK network access.** The `INTERNET` permission was present only in the debug manifest, so release APKs could not reach Shekuthi despite phone connectivity. Added it to the main manifest and rebuilt the APK; `aapt` confirms the permission. New APK SHA-256: `72f932f153dca8913ad2e4b0c617903e44e5e0d57bba28e577ce20af0f61bd40`. | `mobile/android/app/src/main/AndroidManifest.xml` · `plan.md` |
 | 2026-09-19 | M43.1 · Mobile auth network diagnostics | **Improved registration/login error reporting.** The app now shows validation messages from the API and distinguishes connection, timeout, certificate and HTTP server failures instead of always saying “check your connection”. Rebuilt APK: 57.0 MB, SHA-256 `0c2ef9b8c8d2ab968446c0c97044dcb9a5e1de8baa7b7f2abef7f260233cf21d`. | `mobile/lib/features/auth/auth_controller.dart` · `plan.md` |
@@ -1004,3 +1018,118 @@ listingplatform/
 ---
 
 *Generated from `local-market.md`, `additionalfeatures.txt`, `ui deisgns/`, `UX/`, `assets/`. Process rules for coding agents: `AGENTS.md`.*
+
+---
+
+## 10 · Current function inventory and verification (M46, updated 2026-09-24)
+
+This index is the current at-a-glance map of user-facing functions. Detailed
+task history remains in §§5–8; this section records the current causal chain
+and its evidence so future work can continue without reconstructing it.
+
+### Public website and content
+
+| Function | Main implementation | Verification / status |
+|---|---|---|
+| Home, About, Contact, Terms, Privacy, Disclaimer | `backend/routes/web.php`; `PageController`; `resources/views/pages/`; `config/legal.php` | Live pages return HTTP 200; Contact/legal tests pass; production legal entity/address still owner-configured |
+| Product catalog and listing detail | `Web/CatalogController`, `Web/ListingController`, `Product` active scope, Blade catalog/listing/vendor pages | Catalog/booking feature tests pass; web catalog currently filters by search/category only, not area/price (M27.8 open) |
+| PG/rentals/homestays search | `Web/StayController`, `pages/stays.blade.php`, `.catalog-filters` | District/locality/price tests; responsive filter design; live `/stays` 200 |
+| Farm produce for resellers | `Web/ResellerProduceController`, farm-reseller category, hub metadata | Filter test and collection tests; live `/reseller-produce` 200 |
+| Worker/transport directories | Web directory controllers, skill/transport categories | Directory tests; live pages return 200 |
+| Blog/stories | `PostController` web/API, admin post CRUD, story Blade pages | Blog/API/admin post tests; public story API returns 200 |
+| Responsive website navigation/search | `layouts/app.blade.php`, `resources/css/app.css`, served `public/css/app.css` | Static responsive audit and CSS publish; real browser viewport walk still recommended |
+
+### Accounts, identity and admin
+
+| Function | Main implementation | Verification / status |
+|---|---|---|
+| Registration and legal consent | `RegistrationService`, Consent model, web/API registration | Registration/legal tests; consent acceptance is enforced |
+| Email verification | `User` implements `MustVerifyEmail`; signed web verify route; API resend endpoint; web/API verified gate | `EmailVerificationTest`; production requires working SMTP; web has resend form, app shows pending state but has no resend control |
+| Member/admin sign-in and logout | `MemberAuthController`, API `AuthController`, admin `AuthController`, Sanctum/session middleware | Auth and role-gate tests; admin password changes use OTP, but admin login itself does not have second-factor OTP |
+| Admin password change | `Admin/PasswordController`, `password_change_otps`, email mailable, `/admin/password` | `AdminPasswordTest`; production SMTP delivery needs monitoring |
+| Admin operations | Donation/fee settings, districts/localities/hubs, collector assignments, listing approvals, volunteer/verification review, categories, posts, DPDP request queue | Admin feature tests cover major CRUD/actions; live authenticated admin walkthrough not part of this audit |
+
+### Commerce and logistics
+
+| Function | Main implementation | Verification / status |
+|---|---|---|
+| Vendor product create/edit/archive | `ListingController`, `VendorListingController`, shared FormRequests and `ProductPolicy` | Web create/edit/archive and app create/API CRUD; new/edited listings are pending approval by default; Flutter listing edit UI remains missing |
+| Listing moderation | `Admin/ListingModerationController`, `/admin/listings` approve/reject | `ListingApprovalTest`; only active products enter public catalog queries |
+| Public listing image consent | `REQUIRE_LISTING_IMAGE_CONSENT`, `image_public_consent`, `Consent::KEY_LISTING_IMAGES_PUBLIC`, shared upload validator | Production web/app upload requests require explicit consent for new images; accepted files are public by design |
+| Guest booking | `BookingService`, booking controllers, MOQ/stock validation, code/phone lookup/cancel | Booking and web booking tests; money settles directly between parties |
+| Vendor booking fulfillment | Vendor booking web/app screens, shared `BookingService` transitions | Vendor booking and lifecycle tests |
+| Driver jobs and errands | Driver base/availability, `JobMatchingService`, Logistics/Errand controllers | Backend logistics tests and Flutter repository/screens; booking-linked vendor request UI remains missing |
+| Farm-produce collection | Collector assignments, hubs, `collect_produce`, vendor web/app request and collector app queue/actions | Collection/assignment/repository tests; host/device fulfillment not independently observed |
+| Delayed listing deletion | Vendor requests to unpublish then delete after a week | **Not implemented yet**; user clarified scope is vendor product listings only |
+
+### Community, referrals and user rights
+
+| Function | Main implementation | Verification / status |
+|---|---|---|
+| Skilled worker profile/directory | WorkerProfile/ProfileController, mobile profile, web profile and directory | Worker skill/profile/directory tests; app skilled-worker profile is implemented |
+| Volunteer verification | Questionnaire, reports, review service, badge/story publishing | Backend story/review tests; mobile report still lacks evidence photo picking/upload; app listing detail lacks story link |
+| Donations | Admin UPI settings, QR validation, public display-only donation page | Donation tests; platform does not store/process payment credentials |
+| Referral and sales records | ReferralService, owner approval, vendor sales PDF | Backend affiliate/sales tests; app commission interface and errand attribution remain open |
+| In-app notifications | Notification service, device tokens, database inbox, optional FCM | Notification tests; FCM key is optional/unconfigured; website inbox not implemented |
+| DPDP export/deletion | `DataExportService`, `DataDeletionService`, DataRequest endpoints | Existing tests cover basic profile/consent behavior, but export is not complete across all related data and deletion does not yet erase/anonymize every PII surface |
+| Consent coverage | Registration, booking contacts, listing-image publication consent | Errand-contact and notification opt-in consent records remain gaps (M27.5) |
+
+### App/API and release state
+
+- Flutter app routes/features include auth, home, catalog/listing detail, stays,
+  stories, workers/transport, bookings, vendor listing create, vendor bookings,
+  driver base/jobs/errands, collector assignments/collections, volunteer
+  verification, notifications, donations and profile/data requests.
+- APK is built for `https://shekuthi.in/api/v1`; latest release artifact is
+  debug-signed for sideload testing, not Play Store publishing. A private
+  release keystore and final application ID remain required.
+- Automated baseline on 2026-09-24: backend 259 tests / 976 assertions; Flutter
+  analyze clean, 19/19 tests. Public smoke checks returned HTTP 200 for `/`,
+  `/about`, `/contact`, `/privacy`, `/terms`, `/disclaimer`, `/catalog`,
+  `/stays`, `/reseller-produce`, `/workers`, `/transport`, `/blog`, and public
+  API locations/posts/stays/reseller-produce endpoints.
+- Remaining device/production checks: physical navigation-inset/keyboard walk;
+  authenticated registration/verification/listing/booking/collector smoke;
+  Hostinger cron, backups, FCM, SMTP reliability, legal identity and storage
+  persistence.
+
+## 11 · Function index for future reference (updated 2026-09-24)
+
+This is a user-facing lookup of functions added or materially changed. Follow
+the milestone links for owners, implementation files, tests and decision notes.
+
+| User function | Behavior / entry point | Milestone | Current status |
+|---|---|---|---|
+| Browse Shekuthi | Guest home, active catalog, listing detail/vendor page, search/category; `/`, `/catalog`, `/listing/{product}` | M2, M9, M24, M32 | Live/public checks pass; general web catalog area/price filters remain open |
+| PG, rentals and homestays | Dedicated category feed with search, district/locality, price filters; `/stays`, `/api/v1/stays`, app shortcut | M23, M35 | Implemented and tested |
+| Farm produce for resellers | `farm_reseller` listing category/feed; `/reseller-produce`, `/api/v1/reseller-produce`, app shortcut | M28 | Implemented and tested |
+| Guest booking | Book without account; MOQ/stock validation, price snapshot, code lookup and guest cancellation | M3 | Implemented and tested |
+| Vendor account/profile | Register, verify email, log in, edit shop profile, manage product images and view incoming bookings | M12, M33, M45 | Implemented; SMTP/email delivery is an operational dependency |
+| Product submission/moderation | New/edit submissions pending; explicit consent for public listing images; admin approves/rejects at `/admin/listings` | M14.1, M30, M45 | Implemented and tested |
+| Vendor delayed product deletion | Unpublish/archive, then delete after seven days | Owner request after M45 | **Not implemented** |
+| Drivers and errands | Driver base/availability/job matching; guest errand request and code/phone lookup | M4, M15, M18 | Implemented in backend/web/app; end-to-end handoff needs live smoke |
+| Booking-linked driver pickup | Vendor asks a driver to collect/deliver a regular booking | M4.4, M13.3, M27.2 | **API exists; client request flow not implemented** |
+| Collectors and farm collection | Admin signs one collector per sub-division; vendor requests farm collection to a hub; collector accepts/progresses | M28 | Implemented in backend/web/app and tested |
+| Skilled-worker discovery/profile | Worker edits services/categories; public directory filters workers | M15.3, M17, M18 | Web/app/API paths implemented and tested |
+| Volunteer verification | Approval, questionnaire, report, admin review, badge and signed story | M5, M9.5, M25 | Backend/web and story paths implemented; app evidence photo/profile photo upload remains open |
+| Verification story in app listing | Open the volunteer-authored story from a verified listing | M25.1, M27.7 | **API story reference and app link not implemented** |
+| UPI donations | Display-only UPI ID/QR; no platform payment handling | M6 | Implemented; owner must configure live UPI details |
+| Referrals/affiliate | Share codes; record signup/conversion; owner approves peer-to-peer commission; vendor sales PDF | M6, M21 | Web/backend implemented; app commission UI and errand referral attribution remain open |
+| Notifications | Database inbox; optional FCM push | M8 | App/API inbox exists; FCM credentials and web inbox remain open |
+| Consent and account-data requests | Registration/booking/image consent, export, deletion and retention request flows | M7, M26, M45 | Partial: errand/notification consent gaps and incomplete full-data export/deletion remain |
+| Admin operations | Districts/hubs, collector assignments, listing approvals, volunteer/verifications, categories, posts, UPI/fees, data requests | M4–M7, M14.1, M17, M22, M28, M45 | Implemented; admin login 2FA not present (password-change OTP exists) |
+| Mobile app navigation | Home/Browse/Farm/Account/Back bottom navigation; Shekuthi API/site base | M37, M41–M44 | APK sideload build passes tests; physical-phone inset walkthrough and Play signing remain |
+| Branding/legal/contact | Shekuthi name/domain, About/source/AI notices, contact and grievance officer, terms/privacy/disclaimer | M26, M29, M32, M33, M39 | Implemented; legal entity/address/jurisdiction values still need owner completion |
+| Responsive mobile website | App-like bottom tabs, compact header, responsive filters, sharp typography | M34–M37 | CSS/tests pass; manual browser/device walkthrough still recommended |
+
+### Current audit evidence and limits
+
+- Latest completed audit run: backend **259 tests / 976 assertions**; Flutter
+  analyzer clean and **19/19 tests**.
+- Live public website and public API route checks returned HTTP 200 on
+  2026-09-24; these do not verify authenticated mutations or user-specific data.
+- Latest APK is debug-signed and suitable for sideload testing only. Play Store
+  publishing needs a private release keystore and production application ID.
+- Hostinger operations that still require verification: scheduled cron, backup
+  restore, FCM setup, storage persistence, legal identity values and full
+  signed-email/listing-approval journeys with real accounts.

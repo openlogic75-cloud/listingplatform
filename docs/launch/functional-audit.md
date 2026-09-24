@@ -1,57 +1,91 @@
-# Functional Causal Audit
+# Shekuthi Functional Causal Audit
 
-Audit scope: trace each major product promise through **data/schema → logic →
-API/web/app surface → automated evidence**. This is a code-and-test audit, not
-a substitute for authenticated production and physical-device walkthroughs.
+Audit updated 2026-09-24. Method: trace product requirement → database/model →
+service/controller/API → website/app surface → automated evidence. Code presence
+and passing tests do not by themselves prove a live authenticated/device flow.
 
-## Evidence baseline
+## Verification snapshot
 
-- Backend: 255 tests passed, 958 assertions.
-- Flutter: `flutter analyze` clean, 19/19 tests passed.
-- Public live checks: `/`, `/api/v1/locations`, `/api/v1/posts`,
-  `/api/v1/stays` and `/api/v1/reseller-produce` returned HTTP 200.
-- Android APK: built for Shekuthi API/site; physical-device testing remains
-  pending.
+- Backend: **259 tests passed / 976 assertions** (`php artisan test`).
+- Flutter: **analyze clean / 19 tests passed**.
+- Public live endpoints checked 2026-09-24 returned HTTP 200: `/`, `/about`,
+  `/contact`, `/privacy`, `/terms`, `/disclaimer`, `/catalog`, `/stays`,
+  `/reseller-produce`, `/workers`, `/transport`, `/blog`, `/api/v1/locations`,
+  `/api/v1/posts`, `/api/v1/stays`, `/api/v1/reseller-produce`.
+- Current M45 APK is a 57 MB sideload build targeting `https://shekuthi.in` and
+  includes Android INTERNET permission; it is debug-signed and not Play Store
+  ready. Bottom safe-area behavior has not yet been walked on physical devices.
 
-## Working causal chains
+## Function inventory: implemented chains
 
-| Area | Data/logic | API/web/app | Evidence | Status |
-|---|---|---|---|---|
-| Listings and bookings | Product, booking, MOQ and status-transition services | Catalog, listing detail, guest booking, vendor booking dashboard/app repositories | Backend feature tests and repository tests | Working in code; production smoke test pending |
-| Farm-produce collections | `collector_assignments`, hub districts, `collect_produce` jobs and collector matcher | Vendor web/app request, collector app accept/progress | `CollectionJobTest`, `CollectorAssignmentTest`, collector repository tests | Working in code |
-| Legal registration consent | Consent rows, notice versions and registration service | Web/app registration and legal pages | Legal compliance tests | Working in code; production legal identity pending |
-| Public content | Posts/stays/directories controllers and resources | Website pages and app repositories/readers | Blog, stay and directory tests | Working in code |
-| Media uploads | Shared validator, 2 MB cap, resize/WebP, media records | Web/app listing and evidence upload paths | Media upload tests | Backend path working; device evidence capture remains incomplete |
+| Function | Data / logic | API / website / app surface | Evidence and limits |
+|---|---|---|---|
+| Account registration | `RegistrationService`, encrypted email/phone, blind indexes, password hash, registration consent | Web and API register; email verification signed link; mobile pending-verification state; resend verification endpoints | `RegistrationTest`, `WebRegistrationTest`, `EmailVerificationTest`; SMTP delivery must be confirmed in production |
+| Email-link verification | `MustVerifyEmail`, signed URL validation, configurable production verification gate | Web verification/resend routes; API resend endpoint; mobile pending state and descriptive auth errors | Automated verification test passes; still confirm signed-link delivery and click on production mailbox/device |
+| Listing moderation and image consent | Pending product status, admin decision, consent record for public listing imagery | Vendor submits/edits listing; admin approves/rejects; catalogs serve active listings only | `ListingApprovalTest`; live admin moderation and actual public-photo consent UX need production walkthrough |
+| Authentication/session | role/active checks, volunteer approval, collector assignment, verified-email gate | Web sessions; Sanctum API tokens; admin login separate; logout/profile endpoints | Auth tests and role-specific tests; Sanctum tokens currently have no configured expiry |
+| Vendor profile/listings | Vendor/Product models, shared FormRequests, ProductPolicy, 2 MB upload validator, 1600px resize/WebP, four-photo cap | Web dashboard and Flutter listing create; API CRUD; pending moderation; explicit public-image consent; admin `/admin/listings` approve/reject; public catalog only active | `ListingsTest`, `WebVendorListingTest`, `ListingApprovalTest`, `MediaUploadTest`; Flutter listing edit screen is not wired/implemented |
+| Public discovery | Active-only products, search/category/area/price API filters | Website `/catalog`, `/stays`, `/reseller-produce`; public vendor, worker, transport, stories pages; app catalog/stays/farm feeds | Catalog/stay/reseller/directory/blog tests; general web `/catalog` still lacks area/price filters |
+| Guest commerce | MOQ/stock checks, snapshots, booking lifecycle, guest consent | Listing detail booking form; code+phone lookup/cancel; vendor booking dashboard and app | Booking/WebBooking/WebVendorBooking tests; normal vendor-requested pickup/delivery UI is absent |
+| Drivers and errands | Driver base, online state, locality job matching, errand lifecycle | Web/app driver base and profile; driver jobs/errands screens; guest errand create/lookup; online-driver counts | Logistics, driver base, errand and directory tests; real driver handoff not live-tested |
+| Collectors and farm produce | `collector_assignments`, one per locality and user; hub districts; `collect_produce` logistics job matching/status | Admin assignment; vendor collection forms web/app; collector assignment/queue/actions app; reseller feed | Collector/collection feature and repository tests; physical collector workflow not tested |
+| Skilled workers | Worker profile/skill-category models and directory | Web dashboard profile; app profile; public web/API directory | WorkerSkills, WebWorkerProfile and directory tests |
+| Volunteers and verification | Volunteer approval; questionnaire; evidence-path storage; review service creates signed story and badge | Admin approval/review; volunteer app questionnaire/report; public verification display/story | Verification/story tests cover server flow; app report currently lacks evidence photo picking/upload and profile-photo upload |
+| Donations/referrals/sales | UPI display-only settings, referral events/approval, sales report | Donation page; vendor/driver referral dashboard; sales PDF | Donation/referral/PDF tests; app commission interface and errand referral attribution remain unimplemented |
+| Admin operations | District/locality, hubs, collector assignments, listing moderation, skill/transport categories, verification fee/review, posts, donation settings, data-request queue, password-change OTP | Admin web dashboard | Feature tests across admin modules; OTP protects password changes, but not each admin login |
+| Data rights/security | encrypted PII, blind indexes, consent records, retention command, security headers, request throttles | Consent/export/deletion API; privacy/terms/disclaimer/contact pages | `DpdpTest` and security tests cover current behavior; export and deletion are incomplete as listed below |
+| APK/runtime navigation | Flutter role app, secure token storage, Material UI, API client default, mobile navigation shell and safe-area wrapper | Android APK targets Shekuthi API/site; Home/Browse/Farm/Account/Back bottom navigation | 19 repository/token tests and analyzer pass; user reports past overlap; physical phone validation still required |
 
-## Open functional gaps
+## Open gaps and production risks
 
-- **DPDP export/deletion:** current services do not yet cover every personal-data
-  surface such as all bookings, errands, referrals, verifications/media, device
-  tokens and notifications. See M27.4 and M27.6.
-- **Consent coverage:** errand contact and notification registration still need
-  consent rows. See M27.5.
-- **Volunteer evidence:** the backend accepts evidence paths, but the Flutter
-  report flow does not yet pick/upload evidence photos. See M25.3/M27.3.
-- **Verification story app link:** the API/app does not yet expose/open the
-  verification story slug from a listing. See M27.7.
-- **Ordinary pickup/delivery:** the farm-produce collection client exists, but
-  the normal booking-linked vendor pickup request remains open. See M13.3/M27.2.
-- **App parity:** listing edit, admin listing moderation, web notifications and
-  app affiliate UI remain tracked gaps. See M13/M14/M21.
-- **Production operations:** Hostinger PHP/extension configuration, cron,
-  SMTP, FCM, backups, legal identity and real admin/region data require live
-  verification. See Q7, M32 and the launch checklist.
+1. **[Critical] Export file is stored on public disk:** `DataExportService`
+   writes decrypted PII JSON to `Storage::disk('public')` and the controller
+   returns its public URL. Filenames use sequential user IDs and timestamps,
+   making other users' export files potentially guessable. Move exports to a
+   private disk and provide an authenticated/expiring download route before
+   public launch. (`backend/app/Services/DataExportService.php`,
+   `DataExportController.php`)
+2. **DPDP export completeness:** `DataExportService` currently exports user,
+   vendor summary and consent rows only. Extend to the user's relevant bookings,
+   errands, referrals/events, verifications, media references, device tokens and
+   notifications. (`backend/app/Services/DataExportService.php`)
+3. **DPDP deletion completeness:** `DataDeletionService` anonymizes user/vendor
+   data but needs end-to-end review of encrypted guest contacts, media, device
+   tokens, notifications, referrals and role-profile data. (`backend/app/Services/DataDeletionService.php`)
+4. **Consent gaps:** errand contact capture and notification token opt-in need
+   consent records; listing-image public consent is implemented. Check
+   `ErrandController` and `DeviceTokenController`.
+5. **Volunteer media clients:** verification evidence and volunteer profile
+   photo upload exist server-side but are not fully reachable from the mobile
+   app; add picker/upload/retry and test device permissions.
+6. **Verification-story app link:** expose the story slug/reference in
+   `ProductResource` and link from Flutter listing detail.
+7. **Ordinary booking pickup/delivery request:** M28 farm-produce collections
+   work through clients, but the separate booking-linked driver pickup/delivery
+   request is still absent from web/app.
+8. **Vendor app listing editing:** repository supports updates, but the Flutter
+   listing edit route/form is not complete.
+9. **Web notification inbox and app affiliate UI/errand attribution:** remain
+   tracked parity gaps.
+10. **Vendor delayed deletion:** requested flow to let vendors delete a listing
+   after it has remained unpublished for a week has not been implemented.
+11. **General web catalog filters:** `/catalog` has search/category, while API
+    and dedicated sections support area/price filters.
+12. **Operations:** verify Hostinger cron and schedule, backup/restore, media
+    storage, SMTP deliverability, legal identity, FCM configuration and real
+    admin/region data in production.
+13. **Release hardening:** current APK uses the debug certificate and example
+    application ID; create and securely back up the production signing key and
+    choose the final application ID before Play Store release.
+14. **Device/UI validation:** test on physical phones with gesture and
+    three-button navigation, keyboard-open forms, image permissions and mobile
+    widths; automated Flutter tests are mostly repository/model tests.
 
-## Device/browser verification still required
+## Overall verdict
 
-- Android phones with gesture navigation and three-button navigation: verify
-  the bottom NavigationBar safe area, Back action and keyboard/input screens.
-- Android photo permissions, upload failure/retry, collection actions and
-  notification delivery.
-- Website narrow widths at 320px, 375px, 768px and desktop widths.
-- Authenticated production smoke tests for registration, login, admin, booking,
-  upload, deletion and collector flows.
-
-**Verdict:** the implemented core flows have causal code paths and automated
-coverage, but the project is not fully production-ready until the open gaps and
-live/device checks above are closed.
+Core public browsing, booking, vendor dashboards, collectors, and approval
+flows have code paths and automated coverage. **Not every planned function is
+complete and the platform is not fully production-ready.** Close the DPDP,
+volunteer evidence, story-link, booking-pickup and parity gaps above, and perform
+authenticated Hostinger and physical-device tests before treating all functions
+as operational.
