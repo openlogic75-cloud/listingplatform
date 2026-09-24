@@ -74,6 +74,11 @@ class ListingController extends Controller
             $validated['status'] = Product::STATUS_PENDING;
         }
 
+        $newStatus = $validated['status'] ?? $product->status;
+        $validated['unpublished_at'] = in_array($newStatus, [Product::STATUS_INACTIVE, Product::STATUS_ARCHIVED], true)
+            ? ($product->unpublished_at ?? now())
+            : null;
+
         $product->update($validated);
 
         if ($product->images !== [] && $request->boolean('image_public_consent')) {

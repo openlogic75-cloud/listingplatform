@@ -25,7 +25,7 @@ class ListingModerationController extends Controller
     {
         abort_unless($product->status === Product::STATUS_PENDING, 422);
 
-        $product->update(['status' => Product::STATUS_ACTIVE]);
+        $product->update(['status' => Product::STATUS_ACTIVE, 'unpublished_at' => null]);
 
         return redirect()
             ->route('admin.listings.index')
@@ -36,7 +36,7 @@ class ListingModerationController extends Controller
     {
         abort_unless($product->status === Product::STATUS_PENDING, 422);
 
-        $product->update(['status' => Product::STATUS_INACTIVE]);
+        $product->update(['status' => Product::STATUS_INACTIVE, 'unpublished_at' => now()]);
 
         return redirect()
             ->route('admin.listings.index')

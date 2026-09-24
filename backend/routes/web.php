@@ -111,6 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('vendor.listings.update');
     Route::put('/dashboard/listings/{product}/status', [VendorListingController::class, 'status'])
         ->name('vendor.listings.status');
+    Route::delete('/dashboard/listings/{product}', [VendorListingController::class, 'destroy'])
+        ->name('vendor.listings.destroy');
 
     // Driver base of operation on the website (M15.2) — same rules as the API.
     Route::put('/dashboard/driver/base', [DriverBaseController::class, 'update'])

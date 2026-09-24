@@ -269,6 +269,15 @@
                                                 <button class="btn btn-secondary btn-sm" type="submit">Archive</button>
                                             </form>
                                         @endif
+                                        @if ($product->isDeletionEligible())
+                                            <form method="post" action="{{ route('vendor.listings.destroy', $product) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-secondary btn-sm" type="submit">Delete</button>
+                                            </form>
+                                        @elseif (in_array($product->status, ['inactive', 'archived'], true))
+                                            <span class="muted small">Delete available after 7 days unpublished</span>
+                                        @endif
                                     </div>
                                 </li>
                             @endforeach

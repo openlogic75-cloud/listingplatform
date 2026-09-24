@@ -33,18 +33,18 @@ and passing tests do not by themselves prove a live authenticated/device flow.
 | Volunteers and verification | Volunteer approval; questionnaire; evidence-path storage; review service creates signed story and badge | Admin approval/review; volunteer app questionnaire/report; public verification display/story | Verification/story tests cover server flow; app report currently lacks evidence photo picking/upload and profile-photo upload |
 | Donations/referrals/sales | UPI display-only settings, referral events/approval, sales report | Donation page; vendor/driver referral dashboard; sales PDF | Donation/referral/PDF tests; app commission interface and errand referral attribution remain unimplemented |
 | Admin operations | District/locality, hubs, collector assignments, listing moderation, skill/transport categories, verification fee/review, posts, donation settings, data-request queue, password-change OTP | Admin web dashboard | Feature tests across admin modules; OTP protects password changes, but not each admin login |
-| Data rights/security | encrypted PII, blind indexes, consent records, retention command, security headers, request throttles | Consent/export/deletion API; privacy/terms/disclaimer/contact pages | `DpdpTest` and security tests cover current behavior; export and deletion are incomplete as listed below |
+| Data rights/security | encrypted PII, blind indexes, consent records, retention command, security headers, request throttles | Consent/export/deletion API; privacy/terms/disclaimer/contact pages | New exports use private storage and 10-minute signed downloads; export scope and deletion completeness still need work |
 | APK/runtime navigation | Flutter role app, secure token storage, Material UI, API client default, mobile navigation shell and safe-area wrapper | Android APK targets Shekuthi API/site; Home/Browse/Farm/Account/Back bottom navigation | 19 repository/token tests and analyzer pass; user reports past overlap; physical phone validation still required |
 
 ## Open gaps and production risks
 
-1. **[Critical] Export file is stored on public disk:** `DataExportService`
-   writes decrypted PII JSON to `Storage::disk('public')` and the controller
-   returns its public URL. Filenames use sequential user IDs and timestamps,
-   making other users' export files potentially guessable. Move exports to a
-   private disk and provide an authenticated/expiring download route before
-   public launch. (`backend/app/Services/DataExportService.php`,
-   `DataExportController.php`)
+1. **[Critical; code fixed, production cleanup required] Legacy exports may
+   remain on public storage:** new decrypted PII exports are private and use a
+   10-minute signed download link. After deploying the fix, run
+   `retention:sweep --sweeps=exports` to remove old public-disk export files
+   recorded in `data_requests`, then verify their previous URLs return 404.
+   (`DataExportService`, `DataExportController`, `DataExportDownloadController`,
+   `RetentionSweep`)
 2. **DPDP export completeness:** `DataExportService` currently exports user,
    vendor summary and consent rows only. Extend to the user's relevant bookings,
    errands, referrals/events, verifications, media references, device tokens and
@@ -67,8 +67,9 @@ and passing tests do not by themselves prove a live authenticated/device flow.
    listing edit route/form is not complete.
 9. **Web notification inbox and app affiliate UI/errand attribution:** remain
    tracked parity gaps.
-10. **Vendor delayed deletion:** requested flow to let vendors delete a listing
-   after it has remained unpublished for a week has not been implemented.
+10. **Vendor delayed deletion:** vendors can delete drafts anytime and
+    inactive/archived listings after 7 days unpublished; deletion is refused
+    while booking items reference the product.
 11. **General web catalog filters:** `/catalog` has search/category, while API
     and dedicated sections support area/price filters.
 12. **Operations:** verify Hostinger cron and schedule, backup/restore, media

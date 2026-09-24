@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -24,6 +25,7 @@ class Product extends Model
         'district_id',
         'locality_id',
         'status',
+        'unpublished_at',
     ];
 
     public const CATEGORY_TRADITIONAL = 'traditional';
@@ -65,7 +67,29 @@ class Product extends Model
             'available_from' => 'date',
             'available_to' => 'date',
             'images' => 'array',
+            'unpublished_at' => 'datetime',
         ];
+    }
+
+    /**
+     * A listing may be deleted once it has been out of the public eye for
+     * long enough: drafts (never published) anytime; inactive/archived only
+     * after 7 full days unpublished. Active/pending listings are never
+     * eligible — unpublish first.
+     */
+    public function isDeletionEligible(): bool
+    {
+        if ($this->status === self::STATUS_DRAFT) {
+            return true;
+        }
+
+        if (! in_array($this->status, [self::STATUS_INACTIVE, self::STATUS_ARCHIVED], true)) {
+            return false;
+        }
+
+        $since = $this->unpublished_at ?? $this->updated_at;
+
+        return $since !== null && $since->lte(now()->subDays(7));
     }
 
     public function scopeActive(Builder $query): Builder
@@ -85,6 +109,11 @@ class Product extends Model
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    public function bookingItems(): HasMany
+    {
+        return $this->hasMany(BookingItem::class);
     }
 
     public function district(): BelongsTo

@@ -11,6 +11,8 @@ use App\Models\Product;
 use App\Support\UploadValidator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -57,6 +59,9 @@ class VendorListingController extends Controller
             'status' => config('app.require_listing_approval')
                 ? Product::STATUS_PENDING
                 : $request->input('status', Product::STATUS_DRAFT),
+            'unpublished_at' => in_array($request->input('status'), [Product::STATUS_INACTIVE, Product::STATUS_ARCHIVED], true)
+                ? now()
+                : null,
         ]));
 
         if ($validated['images'] !== []) {
@@ -85,11 +90,56 @@ class VendorListingController extends Controller
                 && $data['status'] === Product::STATUS_ACTIVE
                 ? Product::STATUS_PENDING
                 : $data['status'],
+            // Track when the listing left the public eye for the 7-day
+            // delayed-delete rule (M48.1).
+            'unpublished_at' => in_array($data['status'], [Product::STATUS_INACTIVE, Product::STATUS_ARCHIVED], true)
+                ? now()
+                : null,
         ]);
 
         return redirect()
             ->route('dashboard')
             ->with('status', 'Listing updated.');
+    }
+
+    /**
+     * Permanent deletion from the vendor dashboard (M48.1). Only listings
+     * that were never published (drafts) or have been unpublished for at
+     * least 7 days can be removed, and never while orders reference them.
+     */
+    public function destroy(Request $request, Product $product): RedirectResponse
+    {
+        $this->authorize('delete', $product);
+
+        if (! $product->isDeletionEligible()) {
+            throw ValidationException::withMessages([
+                'product' => ['A listing can only be deleted after it has been unpublished for 7 days.'],
+            ]);
+        }
+
+        if ($product->bookingItems()->exists()) {
+            throw ValidationException::withMessages([
+                'product' => ['This listing cannot be deleted because orders reference it.'],
+            ]);
+        }
+
+        DB::transaction(function () use ($request, $product): void {
+            $images = collect($product->images ?? [])->values()->all();
+
+            if ($images !== []) {
+                Storage::disk('public')->delete($images);
+                Media::query()
+                    ->where('uploaded_by', $request->user()->id)
+                    ->whereIn('path', $images)
+                    ->delete();
+            }
+
+            $product->delete();
+        });
+
+        return redirect()
+            ->route('dashboard')
+            ->with('status', 'Listing deleted.');
     }
 
     public function edit(Product $product): View
@@ -139,6 +189,11 @@ class VendorListingController extends Controller
         if (config('app.require_listing_approval')) {
             $validated['status'] = Product::STATUS_PENDING;
         }
+
+        $newStatus = $validated['status'] ?? $product->status;
+        $validated['unpublished_at'] = in_array($newStatus, [Product::STATUS_INACTIVE, Product::STATUS_ARCHIVED], true)
+            ? ($product->unpublished_at ?? now())
+            : null;
 
         $product->update($validated);
 
